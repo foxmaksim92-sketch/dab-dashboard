@@ -77,8 +77,16 @@
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
   @media(max-width:1000px){.grid{grid-template-columns:1fr}}
 
-  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px}
-  .card h2{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  /* Сворачиваемые карточки */
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;transition:all .3s}
+  .card.collapsed{padding-bottom:16px;}
+  .card.collapsed .card-content{display:none;}
+  .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;cursor:pointer;user-select:none;}
+  .card-header h2{margin-bottom:0;}
+  .card-toggle-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:transform .3s;padding:4px;}
+  .card.collapsed .card-toggle-btn{transform:rotate(-90deg);}
+  
+  .card h2{font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .card h2 .badge{font-size:11px;background:var(--panel2);color:var(--muted);padding:2px 8px;
     border-radius:20px;font-weight:400}
 
@@ -201,10 +209,11 @@
     font-weight:700;font-size:13px;padding:4px 12px;border-radius:14px;
     display:inline-block;letter-spacing:.5px;box-shadow:0 2px 4px rgba(0,0,0,.2);color:#0f172a;
   }
-  .emp-row-header .stats{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+  .emp-row-header .stats{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap; align-items:center;}
   .emp-row-header .stats span b{font-size:13px;color:var(--text)}
   .emp-days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
   @media(max-width:900px){.emp-days-grid{grid-template-columns:repeat(2,1fr)}}
+  
   .emp-day-mini{background:var(--panel);border-radius:8px;padding:6px;border:2px solid transparent;
     text-align:center;position:relative;display:flex;flex-direction:column;gap:4px}
   .emp-day-mini.work{border-color:var(--green)}
@@ -215,18 +224,22 @@
   .emp-day-mini .day-head{display:flex;justify-content:space-between;align-items:center;
     font-size:11px;color:var(--muted);font-weight:600}
   .emp-day-mini .day-num{font-size:13px;font-weight:700;color:var(--text)}
-  .emp-day-mini .mini-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+  
+  .emp-day-mini .mini-btns{display:grid;grid-template-columns:repeat(2,1fr);gap:3px}
   .emp-day-mini .mini-btns button{
     height:36px;border-radius:6px;border:1.5px solid var(--border);
     background:var(--panel2);cursor:pointer;font-size:18px;padding:0;color:var(--text);
-    display:flex;align-items:center;justify-content:center;transition:all .15s;
+    display:flex;align-items:center;justify-content:center;transition:all .15s;flex-direction:column;line-height:1;
   }
+  .emp-day-mini .mini-btns button .lbl{font-size:9px;font-weight:600;margin-top:2px;color:var(--muted);}
+  .emp-day-mini .mini-btns button.active .lbl{color:white;}
   .emp-day-mini .mini-btns button.active{background:var(--accent);color:white;border-color:var(--accent)}
   .emp-day-mini .mini-btns button.sick.active{background:var(--red);border-color:var(--red)}
   .emp-day-mini .mini-btns button.off.active{background:var(--muted);color:#0f172a;border-color:var(--muted)}
   .emp-day-mini .mini-btns button.training.active{background:var(--purple);border-color:var(--purple)}
+  
   .emp-day-mini .mini-shift{width:100%;background:var(--panel2);border:1.5px solid var(--border);
-    color:var(--text);padding:6px 4px;border-radius:6px;font-size:13px;font-weight:700;
+    color:var(--text);padding:6px 4px;border-radius:6px;font-size:12px;font-weight:700;
     font-family:inherit;text-align:center;cursor:pointer}
   .emp-day-mini .mini-time{display:grid;grid-template-columns:1fr 1fr;gap:3px}
   .emp-day-mini .mini-time input{width:100%;background:var(--panel2);border:1.5px solid var(--border);
@@ -235,10 +248,13 @@
   .emp-day-mini .training-badge{font-size:11px;background:var(--purple);color:white;
     padding:4px 6px;border-radius:6px;display:block;font-weight:700;width:100%;line-height:1.1}
   .emp-day-mini .day-tag-line{font-size:10px;padding:2px 4px;border-radius:4px;font-weight:700;display:block}
-  .emp-actions{display:flex;justify-content:flex-end;margin-top:6px}
-  .emp-actions button{background:none;border:1px solid var(--border);color:var(--red);
+  .emp-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:6px}
+  .emp-actions button{background:none;border:1px solid var(--border);color:var(--muted);
     cursor:pointer;padding:4px 10px;border-radius:6px;font-size:11px;font-family:inherit}
+  .emp-actions button:hover{color:var(--text);border-color:var(--text)}
+  .emp-actions button.del{color:var(--red);}
 
+  /* Модалки */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
     z-index:10000;align-items:center;justify-content:center;padding:20px}
   .modal-overlay.show{display:flex}
@@ -260,6 +276,14 @@
   .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
   .modal-clear{background:transparent;border:1px solid var(--red);color:var(--red);
     padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit}
+  
+  /* Модалка редактирования */
+  .edit-form { display: flex; flex-direction: column; gap: 12px; }
+  .edit-form .fld label { font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; display: block;}
+  .edit-form .fld input { width: 100%; background: var(--panel2); border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 14px;}
+  .edit-form .color-picker { display:flex; gap:6px; margin-top: 4px;}
+  .edit-form .color-btn { width: 24px; height: 24px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+  .edit-form .color-btn.selected { border-color: #fff; box-shadow: 0 0 0 2px var(--accent); }
 
   .empty-state{text-align:center;padding:30px;color:var(--muted);font-size:13px}
 
@@ -357,6 +381,22 @@
   .color-btn{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .1s;}
   .color-btn:hover{transform:scale(1.15);}
   .color-btn.selected{border-color:#fff;box-shadow:0 0 0 2px var(--accent);}
+  
+  /* Выпадающий множественный фильтр */
+  .multi-select-wrapper { position: relative; display: inline-block; }
+  .multi-select-btn { background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .multi-select-dropdown { display: none; position: absolute; top: 100%; left: 0; background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 8px; z-index: 100; width: max-content; max-height: 250px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.5); margin-top: 4px; }
+  .multi-select-dropdown.show { display: block; }
+  .multi-select-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; cursor: pointer; font-size: 13px; border-radius: 4px; white-space: nowrap;}
+  .multi-select-item:hover { background: var(--panel2); }
+  .multi-select-item input { cursor: pointer; }
+  
+  /* Блок пересечений */
+  .overlap-list { display: flex; flex-direction: column; gap: 6px; }
+  .overlap-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--panel2); border-radius: 6px; font-size: 13px; }
+  .overlap-row.gap { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); }
+  .overlap-time { font-weight: 700; font-family: monospace; color: var(--accent); }
+  .overlap-count { font-weight: 700; }
 </style>
 </head>
 <body>
@@ -390,73 +430,122 @@
 
   <div class="kpi-row" id="kpiRow"></div>
 
-  <div class="card">
-    <h2>📊 Выполнение планов <span class="badge">выручка ₽ · СБП раз · услуги раз</span></h2>
-    <div id="planDash" class="plan-dash-grid"></div>
-  </div>
-
-  <div class="card">
-    <h2>📅 График смен <span class="badge">из планирования сотрудников</span></h2>
-    <p class="hint" style="margin-bottom:12px;">Числа рассчитываются автоматически из вкладки «👥 Сотрудники».</p>
-    <div class="shift-calendar" id="shiftCalendar"></div>
-  </div>
-
-  <div class="card">
-    <h2>📦 Поставка <span class="badge">только вручную</span></h2>
-    <div class="supply-form">
-      <div class="fld"><label>Дата</label><input type="date" id="supplyDate"></div>
-      <div class="fld"><label>Время</label><input type="time" id="supplyTime" value="10:00"></div>
-      <button class="btn orange" onclick="addSupply()">+ Добавить</button>
+  <div class="card collapsible" data-id="plan-dash">
+    <div class="card-header" onclick="toggleCard('plan-dash')">
+      <h2>📊 Выполнение планов <span class="badge">выручка ₽ · СБП раз · услуги раз</span></h2>
+      <button class="card-toggle-btn">▼</button>
     </div>
-    <div class="supply-list" id="supplyList"></div>
+    <div class="card-content">
+      <div id="planDash" class="plan-dash-grid"></div>
+    </div>
   </div>
 
-  <div class="card">
-    <h2>🏷️ Период распродажи</h2>
-    <div class="sale-form">
-      <div class="fld"><label>Начало</label><input type="date" id="saleStart"></div>
-      <div class="fld"><label>Конец</label><input type="date" id="saleEnd"></div>
-      <button class="btn pink" onclick="saveSalePeriod()">💾 Сохранить</button>
-      <button class="btn secondary" onclick="disableSale()">🚫 Нет распродажи</button>
+  <div class="card collapsible" data-id="shift-cal">
+    <div class="card-header" onclick="toggleCard('shift-cal')">
+      <h2>📅 График смен <span class="badge">из планирования</span></h2>
+      <button class="card-toggle-btn">▼</button>
     </div>
-    <p class="hint" id="saleStatus">Период не задан — автоматически 15–30 число</p>
+    <div class="card-content">
+      <div class="shift-calendar" id="shiftCalendar"></div>
+    </div>
+  </div>
+
+  <div class="card collapsible" data-id="overlap">
+    <div class="card-header" onclick="toggleCard('overlap')">
+      <h2>🔀 Пересечения смен <span class="badge">сотрудники онлайн</span></h2>
+      <button class="card-toggle-btn">▼</button>
+    </div>
+    <div class="card-content">
+      <div class="overlap-list" id="overlapList"></div>
+    </div>
+  </div>
+
+  <div class="card collapsible" data-id="supply">
+    <div class="card-header" onclick="toggleCard('supply')">
+      <h2>📦 Поставка</h2>
+      <button class="card-toggle-btn">▼</button>
+    </div>
+    <div class="card-content">
+      <div class="supply-form">
+        <div class="fld"><label>Дата</label><input type="date" id="supplyDate"></div>
+        <div class="fld"><label>Время</label><input type="time" id="supplyTime" value="10:00"></div>
+        <button class="btn orange" onclick="addSupply()">+ Добавить</button>
+      </div>
+      <div class="supply-list" id="supplyList"></div>
+    </div>
+  </div>
+
+  <div class="card collapsible" data-id="sale">
+    <div class="card-header" onclick="toggleCard('sale')">
+      <h2>🏷️ Период распродажи</h2>
+      <button class="card-toggle-btn">▼</button>
+    </div>
+    <div class="card-content">
+      <div class="sale-form">
+        <div class="fld"><label>Начало</label><input type="date" id="saleStart"></div>
+        <div class="fld"><label>Конец</label><input type="date" id="saleEnd"></div>
+        <button class="btn pink" onclick="saveSalePeriod()">💾 Сохранить</button>
+        <button class="btn secondary" onclick="disableSale()">🚫 Нет распродажи</button>
+      </div>
+      <p class="hint" id="saleStatus">Период не задан — автоматически 15–30 число</p>
+    </div>
   </div>
 
   <div class="grid">
-    <div class="card">
-      <h2>🚦 Факторы дня <span class="badge" id="dateBadge"></span></h2>
-      <div class="factor-list" id="factorList"></div>
-      <div class="factor-total"><span>Прогноз посетителей</span>
-        <span><span class="big" id="totalVisitors">—</span> чел.</span></div>
+    <div class="card collapsible" data-id="factors">
+      <div class="card-header" onclick="toggleCard('factors')">
+        <h2>🚦 Факторы дня <span class="badge" id="dateBadge"></span></h2>
+        <button class="card-toggle-btn">▼</button>
+      </div>
+      <div class="card-content">
+        <div class="factor-list" id="factorList"></div>
+        <div class="factor-total"><span>Прогноз посетителей</span>
+          <span><span class="big" id="totalVisitors">—</span> чел.</span></div>
+      </div>
     </div>
-    <div class="card">
-      <h2>📈 Прогноз по часам</h2>
-      <div class="chart-wrap"><div class="chart-bar" id="hourlyChart"></div></div>
+    <div class="card collapsible" data-id="chart">
+      <div class="card-header" onclick="toggleCard('chart')">
+        <h2>📈 Прогноз по часам</h2>
+        <button class="card-toggle-btn">▼</button>
+      </div>
+      <div class="card-content">
+        <div class="chart-wrap"><div class="chart-bar" id="hourlyChart"></div></div>
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <h2>🔥 Тепловая карта · неделя</h2>
-    <div class="heatmap-legend">
-      <div class="lg-item"><span class="swatch" style="background:#22c55e">низк</span>Низкая</div>
-      <div class="lg-item"><span class="swatch" style="background:#eab308">сред</span>Средняя</div>
-      <div class="lg-item"><span class="swatch" style="background:#f97316">выс</span>Высокая</div>
-      <div class="lg-item"><span class="swatch" style="background:#ef4444">пик</span>Пик</div>
-      <div class="lg-item"><span class="swatch" style="background:rgba(249,115,22,.5);color:var(--orange)">📦</span>Поставка</div>
-      <div class="lg-item"><span class="swatch" style="background:rgba(168,85,247,.5);color:var(--purple)">🎓</span>Обучение</div>
+  <div class="card collapsible" data-id="heatmap">
+    <div class="card-header" onclick="toggleCard('heatmap')">
+      <h2>🔥 Тепловая карта · неделя</h2>
+      <button class="card-toggle-btn">▼</button>
     </div>
-    <div style="overflow-x:auto;"><table class="heatmap-table" id="heatmap"></table></div>
+    <div class="card-content">
+      <div class="heatmap-legend">
+        <div class="lg-item"><span class="swatch" style="background:#22c55e">низк</span>Низкая</div>
+        <div class="lg-item"><span class="swatch" style="background:#eab308">сред</span>Средняя</div>
+        <div class="lg-item"><span class="swatch" style="background:#f97316">выс</span>Высокая</div>
+        <div class="lg-item"><span class="swatch" style="background:#ef4444">пик</span>Пик</div>
+        <div class="lg-item"><span class="swatch" style="background:rgba(249,115,22,.5);color:var(--orange)">📦</span>Поставка</div>
+        <div class="lg-item"><span class="swatch" style="background:rgba(168,85,247,.5);color:var(--purple)">🎓</span>Обучение</div>
+      </div>
+      <div style="overflow-x:auto;"><table class="heatmap-table" id="heatmap"></table></div>
+    </div>
   </div>
 
-  <div class="card">
-    <h2>👥 Персонал</h2>
-    <div style="overflow-x:auto;">
-      <table class="staff-table">
-        <thead><tr><th>Время</th><th>Смена</th><th>Прогноз</th><th>Нужно</th><th>Доступно</th><th>Дефицит</th><th>Статус</th></tr></thead>
-        <tbody id="staffTable"></tbody>
-      </table>
+  <div class="card collapsible" data-id="staff">
+    <div class="card-header" onclick="toggleCard('staff')">
+      <h2>👥 Персонал</h2>
+      <button class="card-toggle-btn">▼</button>
     </div>
-    <div class="summary-row" id="staffSummary"></div>
+    <div class="card-content">
+      <div style="overflow-x:auto;">
+        <table class="staff-table">
+          <thead><tr><th>Время</th><th>Смена</th><th>Прогноз</th><th>Нужно</th><th>Доступно</th><th>Дефицит</th><th>Статус</th></tr></thead>
+          <tbody id="staffTable"></tbody>
+        </table>
+      </div>
+      <div class="summary-row" id="staffSummary"></div>
+    </div>
   </div>
 </div>
 
@@ -476,11 +565,11 @@
     <h2>➕ Добавить сотрудника</h2>
     <div class="add-emp-form">
       <div class="fld"><label>Фамилия</label><input type="text" id="newLastName" placeholder="Иванова"></div>
-      <div class="fld"><label>Имя</label><input type="text" id="newFirstName" placeholder="Ирина"></div>
-      <div class="fld"><label>Отчество (опц.)</label><input type="text" id="newMiddleName" placeholder="Игоревна"></div>
-      <div class="fld"><label>Должность</label><input type="text" id="newPosition" placeholder="Продовец"></div>
+      <div class="fld"><label>Имя</label><input type="text" id="newFirstName" placeholder="Анна"></div>
+      <div class="fld"><label>Отчество (опц.)</label><input type="text" id="newMiddleName" placeholder="Сергеевна"></div>
+      <div class="fld"><label>Должность</label><input type="text" id="newPosition" placeholder="Мастер"></div>
       <div class="fld">
-        <label>Цвет должности</label>
+        <label>Цвет</label>
         <div class="color-picker" id="posColorPicker">
           <div class="color-btn selected" style="background:#14b8a6" data-color="#14b8a6" onclick="setNewPosColor('#14b8a6')"></div>
           <div class="color-btn" style="background:#8b5cf6" data-color="#8b5cf6" onclick="setNewPosColor('#8b5cf6')"></div>
@@ -498,10 +587,20 @@
   <div class="card">
     <h2>🗓 Планирование на неделю <span class="badge" id="empCount">0</span></h2>
     <div class="emp-header-tools">
-      <span style="font-size:12px;color:var(--muted);font-weight:600;">Фильтр по сотруднику:</span>
-      <select id="empFilter" class="emp-filter" onchange="renderEmployeesWeekTable()">
-        <option value="all">Все сотрудники</option>
-      </select>
+      <div class="multi-select-wrapper">
+        <button class="multi-select-btn" onclick="toggleMultiSelect(event)">
+          <span id="filterLabel">Все сотрудники</span> ▼
+        </button>
+        <div class="multi-select-dropdown" id="empFilterDropdown">
+          <!-- Чекбоксы будут добавлены через JS -->
+        </div>
+      </div>
+      <span style="font-size:12px;color:var(--muted);margin-left:auto;">
+        <span style="font-weight:600;">Фильтр по должности:</span>
+        <select id="posFilter" class="emp-filter" onchange="renderEmployeesWeekTable()">
+          <option value="all">Все</option>
+        </select>
+      </span>
     </div>
     <div class="emp-week-table" id="empWeekTable"></div>
   </div>
@@ -558,7 +657,7 @@
     </div>
 
     <div class="plan-card" id="planCardSbp">
-      <h3><span class="plan-title">📱 План по СБП <span class="unit-badge">Количество</span></span>
+      <h3><span class="plan-title">📱 План по СБП <span class="unit-badge">раз</span></span>
         <button class="plan-toggle" onclick="togglePlan('sbp')" id="toggleSbp">🚫 Нет плана</button>
       </h3>
       <div class="plan-periods">
@@ -581,7 +680,7 @@
     </div>
 
     <div class="plan-card" id="planCardServices">
-      <h3><span class="plan-title">✂️ План по услугам <span class="unit-badge">Количество</span></span>
+      <h3><span class="plan-title">✂️ План по услугам <span class="unit-badge">раз</span></span>
         <button class="plan-toggle" onclick="togglePlan('services')" id="toggleServices">🚫 Нет плана</button>
       </h3>
       <div class="plan-periods">
@@ -622,6 +721,7 @@
   </div>
 </div>
 
+<!-- Модалка обучения -->
 <div class="modal-overlay" id="trainingModal" onclick="if(event.target===this)closeTrainingModal()">
   <div class="modal">
     <h3>🎓 Обучение / Meeting</h3>
@@ -634,6 +734,35 @@
       <button class="modal-clear" onclick="clearTraining()">🗑 Убрать</button>
       <button class="btn secondary" onclick="closeTrainingModal()">Отмена</button>
       <button class="btn purple" onclick="saveTraining()">💾 Применить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Модалка редактирования сотрудника -->
+<div class="modal-overlay" id="editEmpModal" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal">
+    <h3>✏️ Редактировать сотрудника</h3>
+    <div class="edit-form">
+      <div class="fld"><label>Фамилия</label><input type="text" id="editLastName"></div>
+      <div class="fld"><label>Имя</label><input type="text" id="editFirstName"></div>
+      <div class="fld"><label>Отчество</label><input type="text" id="editMiddleName"></div>
+      <div class="fld"><label>Должность</label><input type="text" id="editPosition"></div>
+      <div class="fld">
+        <label>Цвет</label>
+        <div class="color-picker" id="editPosColorPicker">
+          <div class="color-btn" style="background:#14b8a6" data-color="#14b8a6" onclick="setEditPosColor('#14b8a6')"></div>
+          <div class="color-btn" style="background:#8b5cf6" data-color="#8b5cf6" onclick="setEditPosColor('#8b5cf6')"></div>
+          <div class="color-btn" style="background:#ec4899" data-color="#ec4899" onclick="setEditPosColor('#ec4899')"></div>
+          <div class="color-btn" style="background:#f97316" data-color="#f97316" onclick="setEditPosColor('#f97316')"></div>
+          <div class="color-btn" style="background:#ef4444" data-color="#ef4444" onclick="setEditPosColor('#ef4444')"></div>
+          <div class="color-btn" style="background:#3b82f6" data-color="#3b82f6" onclick="setEditPosColor('#3b82f6')"></div>
+        </div>
+        <input type="hidden" id="editPosColor" value="#14b8a6">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn secondary" onclick="closeEditModal()">Отмена</button>
+      <button class="btn green" onclick="saveEditEmployee()">💾 Сохранить</button>
     </div>
   </div>
 </div>
@@ -678,15 +807,36 @@ const KEYS={
   supply:'dab_supply_v7',
   sale:'dab_sale_v7',
   saleOff:'dab_sale_off_v7',
-  employees:'dab_employees_v8', // версия обновлена из-за цвета
+  employees:'dab_employees_v9', // обновлено
   empPlan:'dab_emp_plan_v7',
   weather:'dab_weather_cache_v7',
   theme:'dab_theme_v7',
-  plans:'dab_plans_v7'
+  plans:'dab_plans_v7',
+  collapsed:'dab_collapsed_v1'
 };
 
 function load(key,def={}){try{return JSON.parse(localStorage.getItem(key))||def}catch(e){return def}}
 function save(key,obj){localStorage.setItem(key,JSON.stringify(obj))}
+
+/* ===== СВОРАЧИВАНИЕ БЛОКОВ ===== */
+function loadCollapsed(){return load(KEYS.collapsed,{})}
+function toggleCard(id){
+  const cards = document.querySelectorAll(`.card[data-id="${id}"]`);
+  cards.forEach(card => {
+    card.classList.toggle('collapsed');
+    const collapsed = card.classList.contains('collapsed');
+    const state = loadCollapsed();
+    state[id] = collapsed;
+    save(KEYS.collapsed, state);
+  });
+}
+function applyCollapsedState(){
+  const state = loadCollapsed();
+  document.querySelectorAll('.card[data-id]').forEach(card => {
+    const id = card.dataset.id;
+    if (state[id]) card.classList.add('collapsed');
+  });
+}
 
 /* ===== ТЕМА ===== */
 function applyTheme(){
@@ -802,7 +952,6 @@ function setShiftForDate(ds,s1,s2){const all=loadShifts();all[ds]={s1:Math.max(0
 function loadEmployees(){
   const raw=load(KEYS.employees,null);
   if(raw&&Array.isArray(raw)&&raw.length&&typeof raw[0]==='object'){
-    // Миграция цвета, если нет
     raw.forEach(e => { if(!e.posColor) e.posColor = '#14b8a6'; });
     return raw;
   }
@@ -874,6 +1023,12 @@ function weatherToCoef(data){
 function toDateStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function getShiftLabel(hour){if(hour<14)return'1-я';if(hour<18)return'Пересеч.';return'2-я'}
 function hourFromTime(t){if(!t)return null;return parseInt(t.split(':')[0])}
+function timeToMinutes(t){if(!t)return 0;const [h,m]=t.split(':').map(Number);return h*60+m;}
+function minutesToHoursStr(mins){
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m > 0 ? `${h}.${m===30?'5':'0'}ч` : `${h}ч`;
+}
 
 function getSaleCoef(d){
   if(isSaleDisabled())return{text:'Распродажа отключена',coef:1.0,cls:'green',disabled:true};
@@ -942,6 +1097,22 @@ function trainingAtHour(ds,hour){
     }
   }
   return false;
+}
+
+// Вычисление количества часов в смене
+function getShiftHoursInfo(plan) {
+  let sh, eh;
+  if (plan.inTime && plan.outTime) {
+    sh = timeToMinutes(plan.inTime);
+    eh = timeToMinutes(plan.outTime);
+  } else {
+    if (plan.shift === 's1') { sh = 10*60; eh = 17*60+30; }
+    else if (plan.shift === 's2') { sh = 14*60; eh = 22*60; }
+    else { sh = 10*60; eh = 22*60; } // обе смены
+  }
+  let diff = eh - sh;
+  if (diff < 0) diff += 24*60; // на случай перехода через полночь
+  return { inTime: plan.inTime, outTime: plan.outTime, hoursStr: minutesToHoursStr(diff) };
 }
 
 /* ===================== РАСЧЁТ ДНЯ ===================== */
@@ -1049,7 +1220,7 @@ function renderKPIs(data){
     <div class="delta">${k.delta}</div></div>`).join('');
 }
 
-/* ===== ВЫПОЛНЕНИЕ ПЛАНОВ (горизонтальный скролл, группы) ===== */
+/* ===== ВЫПОЛНЕНИЕ ПЛАНОВ ===== */
 function getPeriodRange(period,today){
   const start=new Date(today);
   let end=new Date(today);
@@ -1212,6 +1383,83 @@ function renderShiftCalendar(centerDate){
   document.getElementById('shiftCalendar').innerHTML=html;
 }
 
+// Новый блок пересечения
+function renderOverlapBlock(date) {
+  const ds = toDateStr(date);
+  const emps = loadEmployees();
+  const timeline = [];
+  
+  // Инициализируем массив по часам (от 10 до 21 включительно для подсчета)
+  // Но пересечения считаем поминутно. Упростим: разбиваем на интервалы.
+  // Найдем все интервалы работы сотрудников.
+  const intervals = [];
+  emps.forEach(emp => {
+    const plan = getEmpPlanDay(emp.id, ds);
+    if (plan.type !== 'work') return;
+    
+    // Учитываем обучение (если оно есть, сотрудник в это время недоступен, но мы сейчас считаем на работе или нет)
+    // Для пересечений считаем, что если обучение, то он не в смене на это время.
+    
+    let startT, endT;
+    if (plan.inTime && plan.outTime) {
+      startT = plan.inTime;
+      endT = plan.outTime;
+    } else {
+      if (plan.shift === 's1') { startT = '10:00'; endT = '17:30'; }
+      else if (plan.shift === 's2') { startT = '14:00'; endT = '22:00'; }
+      else { startT = '10:00'; endT = '22:00'; } // both
+    }
+    
+    // Учет обеда / перерыва? Если нет данных, не учитываем.
+    intervals.push({ start: timeToMinutes(startT), end: timeToMinutes(endT), empId: emp.id, trainStart: plan.trainStart ? timeToMinutes(plan.trainStart) : null, trainEnd: plan.trainEnd ? timeToMinutes(plan.trainEnd) : null });
+  });
+
+  // Сортируем по времени начала
+  intervals.sort((a,b) => a.start - b.start);
+  
+  // Для каждого часа (от 10 до 22) считаем, сколько людей работает
+  let html = '';
+  let gapFound = false;
+  
+  for (let h = 10; h < 22; h++) {
+    const hourStart = h * 60;
+    const hourEnd = (h + 1) * 60;
+    
+    let count = 0;
+    intervals.forEach(inv => {
+      // Пересечение интервала с часом
+      const overlapStart = Math.max(inv.start, hourStart);
+      const overlapEnd = Math.min(inv.end, hourEnd);
+      if (overlapEnd > overlapStart) {
+        // Учитываем обучение
+        let isTraining = false;
+        if (inv.trainStart !== null && inv.trainEnd !== null) {
+          const trainOverlapStart = Math.max(inv.trainStart, hourStart);
+          const trainOverlapEnd = Math.min(inv.trainEnd, hourEnd);
+          // Если полностью покрыт обучением, то не считаем
+          if (trainOverlapEnd - trainOverlapStart >= (overlapEnd - overlapStart)) {
+            isTraining = true;
+          }
+        }
+        if (!isTraining) count++;
+      }
+    });
+    
+    let color = 'var(--text)';
+    let label = '';
+    if (count === 0) { color = 'var(--red)'; label = '(нет сотрудников)'; gapFound = true; }
+    else if (count === 1) { color = 'var(--yellow)'; label = '(мало)'; }
+    else if (count >= 4) { color = 'var(--green)'; label = '(много)'; }
+    
+    html += `<div class="overlap-row ${count === 0 ? 'gap' : ''}">
+      <span class="overlap-time">${String(h).padStart(2,'0')}:00 – ${String(h+1).padStart(2,'0')}:00</span>
+      <span class="overlap-count" style="color:${color}">${count} чел. ${label}</span>
+    </div>`;
+  }
+  
+  document.getElementById('overlapList').innerHTML = html || '<div class="empty-state">Нет данных</div>';
+}
+
 function renderHeatmap(date){
   const start=new Date(date);
   const dow=start.getDay();
@@ -1339,33 +1587,73 @@ function renderSupplyList(){
     <button onclick="removeSupply('${s.date}')" title="Удалить">×</button></div>`).join('');
 }
 
-/* ===================== СОТРУДНИКИ И ФИЛЬТР ===================== */
+/* ===================== СОТРУДНИКИ ===================== */
 let newPosColor = '#14b8a6';
 
 function setNewPosColor(color){
   newPosColor = color;
   document.getElementById('newPosColor').value = color;
-  document.querySelectorAll('.color-btn').forEach(btn=>{
+  document.querySelectorAll('#posColorPicker .color-btn').forEach(btn=>{
     btn.classList.toggle('selected', btn.dataset.color === color);
   });
+}
+
+// Множественный выбор
+function toggleMultiSelect(e) {
+  if(e) e.stopPropagation();
+  document.getElementById('empFilterDropdown').classList.toggle('show');
+}
+document.addEventListener('click', function(e) {
+  const wrapper = document.querySelector('.multi-select-wrapper');
+  if (wrapper && !wrapper.contains(e.target)) {
+    document.getElementById('empFilterDropdown').classList.remove('show');
+  }
+});
+
+function getSelectedEmployees() {
+  const checks = document.querySelectorAll('#empFilterDropdown input[type="checkbox"]:checked');
+  const ids = Array.from(checks).map(c => c.value);
+  return ids.length === 0 ? 'all' : ids; // если ничего не выбрано, показываем всех
+}
+
+function updateFilterLabel() {
+  const checks = document.querySelectorAll('#empFilterDropdown input[type="checkbox"]:checked');
+  const label = document.getElementById('filterLabel');
+  if (checks.length === 0) {
+    label.textContent = 'Все сотрудники';
+  } else if (checks.length === 1) {
+    const emp = loadEmployees().find(e => e.id === checks[0].value);
+    label.textContent = emp ? empFIO(emp) : '1 выбран';
+  } else {
+    label.textContent = `Выбрано: ${checks.length}`;
+  }
 }
 
 function renderEmployeesWeekTable(){
   const emps=loadEmployees();
   document.getElementById('empCount').textContent=emps.length;
   
-  // Фильтр
-  const filterSel = document.getElementById('empFilter');
-  const currentFilter = filterSel.value;
-  filterSel.innerHTML = '<option value="all">Все сотрудники</option>';
-  emps.forEach(e => {
-    filterSel.innerHTML += `<option value="${e.id}">${empFIO(e)} (${e.position||'—'})</option>`;
-  });
-  filterSel.value = currentFilter || 'all';
+  // Заполняем выпадающий список (множественный выбор)
+  const dropdown = document.getElementById('empFilterDropdown');
+  const currentChecked = Array.from(document.querySelectorAll('#empFilterDropdown input:checked')).map(c => c.value);
+  dropdown.innerHTML = emps.map(e => `
+    <label class="multi-select-item">
+      <input type="checkbox" value="${e.id}" ${currentChecked.includes(e.id) ? 'checked' : ''} onchange="updateFilterLabel(); renderEmployeesWeekTable();">
+      ${empFIO(e)} <span style="font-size:10px;color:var(--muted)">${e.position||''}</span>
+    </label>
+  `).join('');
+  updateFilterLabel();
+
+  // Фильтр по должности
+  const posFilter = document.getElementById('posFilter');
+  const currentPos = posFilter.value;
+  const positions = [...new Set(emps.map(e => e.position).filter(Boolean))];
+  posFilter.innerHTML = '<option value="all">Все</option>' + positions.map(p => `<option value="${p}">${p}</option>`).join('');
+  posFilter.value = currentPos || 'all';
 
   const wrap=document.getElementById('empWeekTable');
   if(!emps.length){
-    wrap.innerHTML='<div class="empty-state">Список сотрудников пуст — добавьте сотрудника выше.</div>';
+    wrap.innerHTML='<div class="empty-state">Список сотрудников пуст.</div>';
     return;
   }
   
@@ -1377,9 +1665,15 @@ function renderEmployeesWeekTable(){
   const sale=loadSale();
   const saleOff=isSaleDisabled();
 
-  // Применяем фильтр
-  const activeFilter = filterSel.value;
-  const displayEmps = activeFilter === 'all' ? emps : emps.filter(e => e.id === activeFilter);
+  // Применяем фильтры
+  let displayEmps = emps;
+  const selectedIds = getSelectedEmployees();
+  if (selectedIds !== 'all') {
+    displayEmps = displayEmps.filter(e => selectedIds.includes(e.id));
+  }
+  if (posFilter.value !== 'all') {
+    displayEmps = displayEmps.filter(e => e.position === posFilter.value);
+  }
 
   let html='';
   displayEmps.forEach(emp=>{
@@ -1419,10 +1713,22 @@ function renderEmployeesWeekTable(){
       const inSale=!saleOff&&sale.start&&sale.end&&ds>=sale.start&&ds<=sale.end;
       const sup=getSupplyForDate(ds);
       const hasTraining=p.trainStart&&p.trainEnd&&p.type==='work';
+      
+      const shiftInfo = getShiftHoursInfo(p);
 
       const cls=['emp-day-mini',p.type];
       if(hasTraining)cls.push('training');
       if(isToday)cls.push('today');
+
+      // Текст для селекта
+      let selText = '';
+      if (p.shift === 's1') selText = `1-я 10–17:30 (7.5ч)`;
+      else if (p.shift === 's2') selText = `2-я 14–22 (8ч)`;
+      else selText = `Обе (12ч)`;
+      
+      if (p.inTime && p.outTime) {
+        selText = `${p.inTime}–${p.outTime} (${shiftInfo.hoursStr})`;
+      }
 
       html+=`<div class="${cls.join(' ')}">
         <div class="day-head">
@@ -1430,16 +1736,25 @@ function renderEmployeesWeekTable(){
           <span class="day-num">${cur.getDate()}.${String(cur.getMonth()+1).padStart(2,'0')}</span>
         </div>
         <div class="mini-btns">
-          <button class="${p.type==='work'?'active':''}" title="Работа" onclick="setType('${emp.id}','${ds}','work')">✅</button>
-          <button class="sick ${p.type==='sick'?'active':''}" title="Больничный" onclick="setType('${emp.id}','${ds}','sick')">🏥</button>
-          <button class="off ${p.type==='off'?'active':''}" title="Выходной" onclick="setType('${emp.id}','${ds}','off')">🏖️</button>
-          <button class="training ${hasTraining?'active':''}" title="Обучение" onclick="openTrainingModal('${emp.id}','${ds}')">🎓</button>
+          <button class="${p.type==='work'?'active':''}" title="Работа" onclick="setType('${emp.id}','${ds}','work')">
+            ✅<span class="lbl">Работа</span>
+          </button>
+          <button class="sick ${p.type==='sick'?'active':''}" title="Больничный" onclick="setType('${emp.id}','${ds}','sick')">
+            🏥<span class="lbl">Больн.</span>
+          </button>
+          <button class="off ${p.type==='off'?'active':''}" title="Выходной" onclick="setType('${emp.id}','${ds}','off')">
+            🏖️<span class="lbl">Вых.</span>
+          </button>
+          <button class="training ${hasTraining?'active':''}" title="Обучение" onclick="openTrainingModal('${emp.id}','${ds}')">
+            🎓<span class="lbl">Обуч.</span>
+          </button>
         </div>
         ${p.type==='work'?`
           <select class="mini-shift" onchange="updatePlan('${emp.id}','${ds}','shift',this.value)">
-            <option value="both" ${p.shift==='both'?'selected':''}>Обе смены</option>
-            <option value="s1" ${p.shift==='s1'?'selected':''}>1-я 10–17:30</option>
-            <option value="s2" ${p.shift==='s2'?'selected':''}>2-я 14–22</option>
+            <option value="both" ${p.shift==='both' && !p.inTime?'selected':''}>Обе (12ч)</option>
+            <option value="s1" ${p.shift==='s1' && !p.inTime?'selected':''}>1-я 10–17:30 (7.5ч)</option>
+            <option value="s2" ${p.shift==='s2' && !p.inTime?'selected':''}>2-я 14–22 (8ч)</option>
+            ${p.inTime ? `<option value="custom" selected>${p.inTime}–${p.outTime} (${shiftInfo.hoursStr})</option>` : ''}
           </select>
           <div class="mini-time">
             <input type="time" value="${p.inTime||(p.shift==='s2'?'14:00':p.shift==='s1'?'10:00':'10:00')}" onchange="updatePlan('${emp.id}','${ds}','inTime',this.value)">
@@ -1454,7 +1769,8 @@ function renderEmployeesWeekTable(){
 
     html+=`</div>
       <div class="emp-actions">
-        <button onclick="removeEmployee('${emp.id}')">🗑 Удалить</button>
+        <button onclick="openEditModal('${emp.id}')">✏️ Редактировать</button>
+        <button class="del" onclick="removeEmployee('${emp.id}')">🗑 Удалить</button>
       </div>
     </div>`;
   });
@@ -1471,8 +1787,13 @@ function setType(empId,ds,type){
 
 function updatePlan(empId,ds,field,value){
   const cur=getEmpPlanDay(empId,ds);
-  cur[field]=value;
-  if(field==='shift'){cur.inTime='';cur.outTime=''}
+  if (field === 'shift') {
+    cur.shift = value;
+    cur.inTime = '';
+    cur.outTime = '';
+  } else {
+    cur[field] = value;
+  }
   setEmpPlanDay(empId,ds,cur);
   renderEmployeesWeekTable();
   recalculate();
@@ -1511,6 +1832,63 @@ function removeEmployee(id){
   renderEmployeesWeekTable();
   recalculate();
   showToast('Сотрудник удалён');
+}
+
+/* ===================== РЕДАКТИРОВАНИЕ СОТРУДНИКА ===================== */
+let editEmpId = null;
+let editPosColor = '#14b8a6';
+
+function openEditModal(id) {
+  const emp = loadEmployees().find(e => e.id === id);
+  if(!emp) return;
+  editEmpId = id;
+  editPosColor = emp.posColor || '#14b8a6';
+  
+  document.getElementById('editLastName').value = emp.last || '';
+  document.getElementById('editFirstName').value = emp.first || '';
+  document.getElementById('editMiddleName').value = emp.middle || '';
+  document.getElementById('editPosition').value = emp.position || '';
+  document.getElementById('editPosColor').value = editPosColor;
+  
+  document.querySelectorAll('#editPosColorPicker .color-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.color === editPosColor);
+  });
+  
+  document.getElementById('editEmpModal').classList.add('show');
+}
+
+function setEditPosColor(color) {
+  editPosColor = color;
+  document.getElementById('editPosColor').value = color;
+  document.querySelectorAll('#editPosColorPicker .color-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.color === color);
+  });
+}
+
+function closeEditModal() {
+  document.getElementById('editEmpModal').classList.remove('show');
+  editEmpId = null;
+}
+
+function saveEditEmployee() {
+  if(!editEmpId) return;
+  const emps = loadEmployees();
+  const emp = emps.find(e => e.id === editEmpId);
+  if(!emp) return;
+  
+  emp.last = document.getElementById('editLastName').value.trim();
+  emp.first = document.getElementById('editFirstName').value.trim();
+  emp.middle = document.getElementById('editMiddleName').value.trim();
+  emp.position = document.getElementById('editPosition').value.trim();
+  emp.posColor = document.getElementById('editPosColor').value;
+  
+  if(!emp.last) return showToast('Укажите фамилию', true);
+  
+  saveEmployees(emps);
+  closeEditModal();
+  renderEmployeesWeekTable();
+  recalculate();
+  showToast('✅ Данные обновлены');
 }
 
 /* ===================== ОБУЧЕНИЕ ===================== */
@@ -1732,6 +2110,7 @@ async function recalculate(){
   renderHeatmap(date);
   renderStaffTable(data);
   renderShiftCalendar(date);
+  renderOverlapBlock(date); // <-- Новый блок
   renderSupplyList();
   renderPlanDashboard();
   renderPlanForm();
@@ -1742,6 +2121,7 @@ function selectDate(ds){document.getElementById('dateInput').value=ds;recalculat
 /* ===================== INIT ===================== */
 (async function init(){
   applyTheme();
+  applyCollapsedState(); // Применяем сохраненные состояния
   const today=new Date();
   const todayStr=toDateStr(today);
   document.getElementById('dateInput').value=todayStr;
