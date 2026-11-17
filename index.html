@@ -153,10 +153,11 @@
   .sd-tags{display:flex;gap:3px;margin-bottom:6px;flex-wrap:wrap}
   .shift-row{display:flex;align-items:center;gap:5px;margin-top:5px;font-size:11px}
   .s-label{color:var(--muted);min-width:40px;font-size:10px}
-  .s-input{width:36px;background:var(--panel);border:1px solid var(--border);color:var(--text);
-    padding:3px 5px;border-radius:5px;font-size:12px;font-weight:700;font-family:monospace;text-align:center}
-  .s-btn{width:20px;height:20px;border-radius:50%;background:var(--panel);border:1px solid var(--border);
-    color:var(--text);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
+  .s-value{background:var(--panel);border:1px solid var(--border);color:var(--text);
+    padding:4px 10px;border-radius:5px;font-size:13px;font-weight:700;font-family:monospace;
+    text-align:center;min-width:36px}
+  .s-value.zero{opacity:.4}
+  .s-hint{font-size:9px;color:var(--muted);margin-left:auto}
   .supply-time-badge{background:var(--orange);color:#0f172a;font-size:9px;font-weight:700;
     padding:2px 6px;border-radius:8px;margin-top:6px;display:inline-block}
 
@@ -192,6 +193,8 @@
   .emp-row-header{display:flex;justify-content:space-between;align-items:center;
     margin-bottom:8px;flex-wrap:wrap;gap:6px}
   .emp-row-header .fio{font-weight:700;font-size:14px}
+  .emp-row-header .fio .pos{font-weight:400;font-size:12px;color:var(--teal);margin-left:6px;
+    background:rgba(20,184,166,.15);padding:1px 8px;border-radius:10px;display:inline-block}
   .emp-row-header .stats{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
   .emp-row-header .stats span b{font-size:13px;color:var(--text)}
   .emp-days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
@@ -266,6 +269,8 @@
   .plan-card.disabled{opacity:.6;border-left-color:var(--muted)}
   .plan-card h3{font-size:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
   .plan-card h3 .plan-title{display:flex;align-items:center;gap:6px}
+  .plan-card h3 .unit-badge{font-size:10px;background:var(--panel);color:var(--muted);
+    padding:2px 8px;border-radius:10px;font-weight:400;margin-left:6px}
   .plan-toggle{background:var(--red);color:white;border:none;padding:4px 10px;border-radius:14px;
     cursor:pointer;font-size:11px;font-weight:600;font-family:inherit}
   .plan-toggle.enable{background:var(--green)}
@@ -308,6 +313,7 @@
   .plan-dash-item .pdi-pct.done{color:var(--green)}
   .plan-dash-item .pdi-pct.warn{color:var(--yellow)}
   .plan-dash-item .pdi-pct.bad{color:var(--red)}
+  .plan-dash-item .pdi-unit{font-size:10px;color:var(--muted);font-weight:400;margin-left:4px}
 
   .rev-period{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
   .rev-period button{background:var(--panel2);border:1px solid var(--border);color:var(--text);
@@ -361,10 +367,17 @@
 
   <div class="kpi-row" id="kpiRow"></div>
 
-  <!-- ВЫПОЛНЕНИЕ ПЛАНОВ -->
+  <!-- ⬆️ ВЫПОЛНЕНИЕ ПЛАНОВ — ПЕРЕНЕСЕНО ВЫШЕ ГРАФИКА СМЕН -->
   <div class="card">
-    <h2>📊 Выполнение планов <span class="badge">выручка · СБП · услуги</span></h2>
+    <h2>📊 Выполнение планов <span class="badge">выручка ₽ · СБП раз · услуги раз</span></h2>
     <div id="planDash"></div>
+  </div>
+
+  <!-- ⬇️ ГРАФИК СМЕН — ТЕПЕРЬ НИЖЕ ПЛАНОВ, ДАННЫЕ ИЗ ПЛАНИРОВАНИЯ -->
+  <div class="card">
+    <h2>📅 График смен <span class="badge">из планирования сотрудников</span></h2>
+    <p class="hint" style="margin-bottom:12px;">Числа рассчитываются автоматически из вкладки «👥 Сотрудники». Чтобы изменить — отредактируйте план сотрудника.</p>
+    <div class="shift-calendar" id="shiftCalendar"></div>
   </div>
 
   <div class="card">
@@ -386,11 +399,6 @@
       <button class="btn secondary" onclick="disableSale()">🚫 Нет распродажи</button>
     </div>
     <p class="hint" id="saleStatus">Период не задан — автоматически 15–30 число</p>
-  </div>
-
-  <div class="card">
-    <h2>📅 График смен</h2>
-    <div class="shift-calendar" id="shiftCalendar"></div>
   </div>
 
   <div class="grid">
@@ -430,12 +438,11 @@
     <div class="summary-row" id="staffSummary"></div>
   </div>
 </div>
-
 <!-- ==================== СОТРУДНИКИ ==================== -->
 <div class="view" id="view-employees">
   <div class="header">
     <div><h1>👥 Сотрудники</h1>
-      <p class="subtitle">Добавление · планирование всех сотрудников на неделю</p></div>
+      <p class="subtitle">Добавление · должность · планирование всех сотрудников на неделю</p></div>
     <div class="header-actions">
       <button class="btn refresh" onclick="refreshDashboard(this)">
         <span class="icon">🔄</span> Обновить
@@ -449,13 +456,14 @@
       <div class="fld"><label>Фамилия</label><input type="text" id="newLastName" placeholder="Иванова"></div>
       <div class="fld"><label>Имя</label><input type="text" id="newFirstName" placeholder="Анна"></div>
       <div class="fld"><label>Отчество (опц.)</label><input type="text" id="newMiddleName" placeholder="Сергеевна"></div>
+      <div class="fld"><label>Должность</label><input type="text" id="newPosition" placeholder="Мастер"></div>
       <button class="btn cyan" onclick="addEmployee()">+ Добавить</button>
     </div>
   </div>
 
   <div class="card">
     <h2>🗓 Планирование на неделю · все сотрудники <span class="badge" id="empCount">0</span></h2>
-    <p class="hint" style="margin-bottom:14px;">Отметьте дни: ✅ работа, 🏥 больничный, 🏖️ выходной, 🎓 обучение.</p>
+    <p class="hint" style="margin-bottom:14px;">Отметьте дни: ✅ работа, 🏥 больничный, 🏖️ выходной, 🎓 обучение. График смен на дашборде строится из этих данных.</p>
     <div class="emp-week-table" id="empWeekTable"></div>
   </div>
 </div>
@@ -464,7 +472,7 @@
 <div class="view" id="view-revenue">
   <div class="header">
     <div><h1>💵 Выручка и планы</h1>
-      <p class="subtitle">Ввод выручки · планы по выручке, СБП и услугам</p></div>
+      <p class="subtitle">Ввод выручки · планы: выручка в ₽, СБП и услуги — в количестве раз</p></div>
     <div class="header-actions">
       <button class="btn refresh" onclick="refreshDashboard(this)">
         <span class="icon">🔄</span> Обновить
@@ -486,11 +494,11 @@
   <!-- ПЛАНЫ -->
   <div class="card">
     <h2>🎯 Планы <span class="badge">на день / неделю / месяц · можно отключить</span></h2>
-    <p class="hint" style="margin-bottom:14px;">Задайте планы по каждому показателю. Кнопка «🚫 Нет плана» отключает показатель — он не учитывается на дашборде.</p>
+    <p class="hint" style="margin-bottom:14px;">Выручка — в рублях, СБП и услуги — в количестве раз. Кнопка «🚫 Нет плана» отключает показатель.</p>
 
-    <!-- Выручка -->
+    <!-- Выручка (₽) -->
     <div class="plan-card" id="planCardRevenue">
-      <h3><span class="plan-title">💰 План по выручке</span>
+      <h3><span class="plan-title">💰 План по выручке <span class="unit-badge">₽</span></span>
         <button class="plan-toggle" onclick="togglePlan('revenue')" id="toggleRevenue">🚫 Нет плана</button>
       </h3>
       <div class="plan-periods">
@@ -512,9 +520,9 @@
       </div>
     </div>
 
-    <!-- СБП -->
+    <!-- СБП (раз) -->
     <div class="plan-card" id="planCardSbp">
-      <h3><span class="plan-title">📱 План по СБП</span>
+      <h3><span class="plan-title">📱 План по СБП <span class="unit-badge">раз</span></span>
         <button class="plan-toggle" onclick="togglePlan('sbp')" id="toggleSbp">🚫 Нет плана</button>
       </h3>
       <div class="plan-periods">
@@ -536,9 +544,9 @@
       </div>
     </div>
 
-    <!-- Услуги -->
+    <!-- Услуги (раз) -->
     <div class="plan-card" id="planCardServices">
-      <h3><span class="plan-title">✂️ План по услугам</span>
+      <h3><span class="plan-title">✂️ План по услугам <span class="unit-badge">раз</span></span>
         <button class="plan-toggle" onclick="togglePlan('services')" id="toggleServices">🚫 Нет плана</button>
       </h3>
       <div class="plan-periods">
@@ -598,7 +606,6 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
 <script>
 /* ===================== КОНСТАНТЫ ===================== */
 const HOURS=[10,11,12,13,14,15,16,17,18,19,20,21];
@@ -663,7 +670,6 @@ function toggleTheme(){
 }
 
 /* ===== ПЛАНЫ ===== */
-// Структура: {revenue:{disabled:false, day:{value:0, disabled:false}, week:..., month:...}, sbp:..., services:...}
 function loadPlans(){
   const def={
     revenue:{disabled:false,day:{value:0,disabled:false},week:{value:0,disabled:false},month:{value:0,disabled:false}},
@@ -672,7 +678,6 @@ function loadPlans(){
   };
   const stored=load(KEYS.plans,null);
   if(!stored)return def;
-  // Мержим с дефолтом на случай новых полей
   ['revenue','sbp','services'].forEach(k=>{
     if(!stored[k])stored[k]=def[k];
     ['day','week','month'].forEach(p=>{
@@ -703,7 +708,6 @@ function savePlan(type,period,val){
   const p=loadPlans();
   const num=parseFloat(val)||0;
   p[type][period].value=num;
-  // Если ввели значение — авто-включаем период
   if(num>0 && p[type][period].disabled){
     p[type][period].disabled=false;
     p[type].disabled=false;
@@ -714,12 +718,13 @@ function savePlan(type,period,val){
 function planTypeName(type){
   return {revenue:'План по выручке',sbp:'План по СБП',services:'План по услугам'}[type];
 }
+// Единицы измерения: выручка — ₽, СБП и услуги — раз
+function planUnit(type){return type==='revenue'?'₽':'раз'}
 
 function renderPlanForm(){
   const p=loadPlans();
   ['revenue','sbp','services'].forEach(type=>{
     const titleCase=type.charAt(0).toUpperCase()+type.slice(1);
-    // Верхняя кнопка "Нет плана"
     const toggleBtn=document.getElementById('toggle'+titleCase);
     if(toggleBtn){
       toggleBtn.textContent=p[type].disabled?'✅ Включить':'🚫 Нет плана';
@@ -758,17 +763,17 @@ function renderPlanForm(){
 
 /* ===================== ОСТАЛЬНЫЕ ХРАНИЛИЩА ===================== */
 function loadShifts(){return load(KEYS.shifts)}
-function getShiftForDate(ds){const all=loadShifts();return all[ds]||{s1:3,s2:3}}
+function getShiftForDate(ds){const all=loadShifts();return all[ds]||{s1:0,s2:0}}
 function setShiftForDate(ds,s1,s2){const all=loadShifts();all[ds]={s1:Math.max(0,s1),s2:Math.max(0,s2)};save(KEYS.shifts,all)}
 
 function loadEmployees(){
   const raw=load(KEYS.employees,null);
   if(raw&&Array.isArray(raw)&&raw.length&&typeof raw[0]==='object')return raw;
   const defaults=[
-    {id:'e1',last:'Иванова',first:'Анна',middle:'Сергеевна'},
-    {id:'e2',last:'Петров',first:'Сергей',middle:'Иванович'},
-    {id:'e3',last:'Сидорова',first:'Елена',middle:''},
-    {id:'e4',last:'Козлов',first:'Дмитрий',middle:'Алексеевич'}
+    {id:'e1',last:'Иванова',first:'Анна',middle:'Сергеевна',position:'Мастер'},
+    {id:'e2',last:'Петров',first:'Сергей',middle:'Иванович',position:'Барбер'},
+    {id:'e3',last:'Сидорова',first:'Елена',middle:'',position:'Администратор'},
+    {id:'e4',last:'Козлов',first:'Дмитрий',middle:'Алексеевич',position:'Барбер'}
   ];
   save(KEYS.employees,defaults);return defaults;
 }
@@ -853,12 +858,8 @@ function getSaleCoef(d){
 
 function isSalaryDay(d){const day=d.getDate();return(day>=5&&day<=10)||(day>=20&&day<=25)}
 
+// Количество сотрудников в конкретный день и час по планам
 function availableStaffForDay(ds,hour){
-  const base=getShiftForDate(ds);
-  let baseCount=0;
-  if(hour>=10&&hour<=17)baseCount+=base.s1;
-  if(hour>=14&&hour<=21)baseCount+=base.s2;
-
   const emps=loadEmployees();
   let available=0;
   emps.forEach(emp=>{
@@ -877,10 +878,21 @@ function availableStaffForDay(ds,hour){
     else{sh=(inH===null||isNaN(inH))?10:inH;eh=(outH===null||isNaN(outH))?21:outH}
     if(hour>=sh&&hour<=eh)available++;
   });
+  return available;
+}
 
-  const sickOff=emps.filter(e=>{const p=getEmpPlanDay(e.id,ds);return p.type==='sick'||p.type==='off'}).length;
-  const effectiveBase=Math.max(0,baseCount-sickOff);
-  return Math.max(effectiveBase,available);
+// Подсчёт сотрудников по сменам из планирования — для графика смен
+function countShiftsFromPlanning(ds){
+  const emps=loadEmployees();
+  let s1=0,s2=0;
+  emps.forEach(emp=>{
+    const plan=getEmpPlanDay(emp.id,ds);
+    if(plan.type!=='work')return;
+    if(plan.shift==='s1')s1++;
+    else if(plan.shift==='s2')s2++;
+    else{s1++;s2++} // "both" учитывается в обеих сменах
+  });
+  return{s1,s2};
 }
 
 function trainingAtHour(ds,hour){
@@ -952,7 +964,6 @@ function calculateDaySync(d){
   }
   return{visitors,hourly};
 }
-
 /* ===================== ВКЛАДКИ ===================== */
 function switchTab(name){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -963,7 +974,6 @@ function switchTab(name){
   if(name==='revenue'){renderPlanForm();renderRevenue();}
 }
 
-/* ===== КНОПКА ОБНОВИТЬ ===== */
 async function refreshDashboard(btn){
   if(btn){btn.classList.add('spinning');btn.disabled=true}
   weatherCache={};
@@ -995,7 +1005,7 @@ function renderKPIs(data){
     {label:'Посетителей',value:data.visitors,unit:'чел.',cls:'',delta:'прогноз'},
     {label:'Пик',value:peakHour+':00',unit:'',cls:'yellow',delta:peak+' чел.'},
     {label:'Нужно (макс)',value:maxStaff,unit:'чел.',cls:'red',delta:'в пик'},
-    {label:'Доступно (сред.)',value:avgAvail,unit:'чел.',cls:'green',delta:'с учётом планов'}
+    {label:'Доступно (сред.)',value:avgAvail,unit:'чел.',cls:'green',delta:'из планирования'}
   ];
   document.getElementById('kpiRow').innerHTML=kpis.map(k=>`
     <div class="kpi ${k.cls}"><div class="label">${k.label}</div>
@@ -1003,7 +1013,7 @@ function renderKPIs(data){
     <div class="delta">${k.delta}</div></div>`).join('');
 }
 
-/* ===== ГРАФИК ВЫПОЛНЕНИЯ ПЛАНОВ ===== */
+/* ===== ВЫПОЛНЕНИЕ ПЛАНОВ ===== */
 function getPeriodRange(period,today){
   const start=new Date(today);
   let end=new Date(today);
@@ -1013,21 +1023,26 @@ function getPeriodRange(period,today){
     start.setDate(start.getDate()+((dow===0)?-6:1-dow));
     end=new Date(start);end.setDate(start.getDate()+6);
   }
-  else{ // month
+  else{
     start.setDate(1);
     end=new Date(start.getFullYear(),start.getMonth()+1,0);
   }
   return {start:toDateStr(start),end:toDateStr(end)};
 }
 
-function getFactForPeriod(period,today){
+// Факт для периода. Выручка — сумма ₽. СБП/услуги пока не вводятся — 0.
+function getFactForPeriod(type,period,today){
   const range=getPeriodRange(period,today);
-  const rev=loadRevenue();
-  let fact=0;
-  Object.entries(rev).forEach(([ds,v])=>{
-    if(ds>=range.start&&ds<=range.end)fact+=v.amount||0;
-  });
-  return fact;
+  if(type==='revenue'){
+    const rev=loadRevenue();
+    let fact=0;
+    Object.entries(rev).forEach(([ds,v])=>{
+      if(ds>=range.start&&ds<=range.end)fact+=v.amount||0;
+    });
+    return fact;
+  }
+  // СБП и услуги — отдельного ввода нет, факт = 0
+  return 0;
 }
 
 function renderPlanDashboard(){
@@ -1037,9 +1052,9 @@ function renderPlanDashboard(){
   if(!el)return;
 
   const typeMeta={
-    revenue:{icon:'💰',label:'Выручка',color:'var(--pink)'},
-    sbp:{icon:'📱',label:'СБП',color:'var(--cyan)'},
-    services:{icon:'✂️',label:'Услуги',color:'var(--purple)'}
+    revenue:{icon:'💰',label:'Выручка',unit:'₽'},
+    sbp:{icon:'📱',label:'СБП',unit:'раз'},
+    services:{icon:'✂️',label:'Услуги',unit:'раз'}
   };
   const periodMeta={day:'День',week:'Неделя',month:'Месяц'};
 
@@ -1048,7 +1063,6 @@ function renderPlanDashboard(){
     const planData=plans[type];
     const meta=typeMeta[type];
 
-    // Если весь тип отключён — показываем одну серую заглушку
     if(planData.disabled){
       html+=`<div class="plan-dash-item disabled">
         <div class="pdi-head">
@@ -1062,11 +1076,10 @@ function renderPlanDashboard(){
 
     Object.keys(periodMeta).forEach(period=>{
       const pd=planData[period];
-      // Пропускаем отключённые периоды и не заданные планы
       if(pd.disabled)return;
       if(!pd.value||pd.value<=0)return;
 
-      const fact=getFactForPeriod(period,today);
+      const fact=getFactForPeriod(type,period,today);
       const plan=pd.value;
       const pct=plan>0?(fact/plan*100):0;
       const displayPct=Math.min(100,pct);
@@ -1075,14 +1088,17 @@ function renderPlanDashboard(){
       if(pct>=100)statusCls='done';
       else if(pct>=70)statusCls='warn';
 
+      // Форматирование: ₽ — с разделителями, раз — просто число
+      const fmt=(n)=>type==='revenue'?formatRub(n):Math.round(n)+' '+meta.unit;
+
       html+=`<div class="plan-dash-item ${statusCls}">
         <div class="pdi-head">
           <div class="pdi-title">${meta.icon} ${meta.label}</div>
           <div class="pdi-period">${periodMeta[period]}</div>
         </div>
         <div class="pdi-nums">
-          <span>Факт: <b>${formatRub(fact)}</b></span>
-          <span style="color:var(--muted)">План: ${formatRub(plan)}</span>
+          <span>Факт: <b>${fmt(fact)}</b></span>
+          <span style="color:var(--muted)">План: ${fmt(plan)}</span>
         </div>
         <div class="pdi-bar">
           <div class="pdi-bar-fill ${statusCls}" style="width:${displayPct}%"></div>
@@ -1121,12 +1137,12 @@ function renderHourlyChart(data){
   }).join('');
 }
 
+// ГРАФИК СМЕН — ТОЛЬКО ЧТЕНИЕ, ИЗ ПЛАНИРОВАНИЯ
 function renderShiftCalendar(centerDate){
   const start=new Date(centerDate);
   const dow=start.getDay();
   start.setDate(start.getDate()+((dow===0)?-6:1-dow));
   const todayStr=toDateStr(new Date());
-  const shifts=loadShifts();
   const supplies=loadSupplies();
   const sale=loadSale();
   const saleOff=isSaleDisabled();
@@ -1139,7 +1155,7 @@ function renderShiftCalendar(centerDate){
     const hol=HOLIDAYS[mmdd];
     const customSup=supplies.find(s=>s.date===ds);
     const inSale=!saleOff&&sale.start&&sale.end&&ds>=sale.start&&ds<=sale.end;
-    const shift=shifts[ds]||{s1:3,s2:3};
+    const shifts=countShiftsFromPlanning(ds); // ← из планирования
     const trainExists=(function(){
       const emps=loadEmployees();
       return emps.some(e=>{const p=getEmpPlanDay(e.id,ds);return p.trainStart&&p.trainEnd&&p.type==='work'});
@@ -1160,27 +1176,17 @@ function renderShiftCalendar(centerDate){
         ${trainExists?`<span class="day-tag tag-training">🎓</span>`:''}
       </div>
       <div class="shift-row"><span class="s-label">10:00</span>
-        <button class="s-btn" onclick="changeShift('${ds}',-1,0)">−</button>
-        <input class="s-input" type="number" min="0" max="20" value="${shift.s1}" onchange="changeShift('${ds}','set',0,this.value)">
-        <button class="s-btn" onclick="changeShift('${ds}',1,0)">+</button>
+        <span class="s-value ${shifts.s1===0?'zero':''}">${shifts.s1}</span>
+        <span class="s-hint">1-я смена</span>
       </div>
       <div class="shift-row"><span class="s-label">14:00</span>
-        <button class="s-btn" onclick="changeShift('${ds}',0,-1)">−</button>
-        <input class="s-input" type="number" min="0" max="20" value="${shift.s2}" onchange="changeShift('${ds}','set',1,this.value)">
-        <button class="s-btn" onclick="changeShift('${ds}',0,1)">+</button>
+        <span class="s-value ${shifts.s2===0?'zero':''}">${shifts.s2}</span>
+        <span class="s-hint">2-я смена</span>
       </div>
       ${customSup?`<div class="supply-time-badge">📦 ${customSup.time}</div>`:''}
     </div>`;
   }
   document.getElementById('shiftCalendar').innerHTML=html;
-}
-
-function changeShift(ds,type,idx,val){
-  const cur=getShiftForDate(ds);
-  if(type==='set'){if(idx===0)cur.s1=Math.max(0,parseInt(val)||0);else cur.s2=Math.max(0,parseInt(val)||0)}
-  else{if(idx===0)cur.s1=Math.max(0,cur.s1+type);else cur.s2=Math.max(0,cur.s2+type)}
-  setShiftForDate(ds,cur.s1,cur.s2);
-  recalculate();
 }
 
 function renderHeatmap(date){
@@ -1263,7 +1269,6 @@ function renderStaffTable(data){
   document.getElementById('staffTable').innerHTML=rows;
 
   const extra=deficit>0?Math.ceil(deficit/4):0;
-  const shift=getShiftForDate(data.dateStr);
   const emps=loadEmployees();
   let sickCount=0,offCount=0,trainCount=0;
   emps.forEach(e=>{
@@ -1276,7 +1281,6 @@ function renderStaffTable(data){
   document.getElementById('staffSummary').innerHTML=`
     <div>📊 Нужно: <b>${totalNeeded}</b></div>
     <div>👥 Доступно: <b>${totalAvail}</b></div>
-    <div>📅 База: <b>${shift.s1}+${shift.s2}</b></div>
     ${sickCount?`<div style="color:var(--red)">🏥 Больничных: <b>${sickCount}</b></div>`:''}
     ${offCount?`<div style="color:var(--muted)">🏖️ Выходных: <b>${offCount}</b></div>`:''}
     ${trainCount?`<div style="color:var(--purple)">🎓 На обучении: <b>${trainCount}</b></div>`:''}
@@ -1342,9 +1346,10 @@ function renderEmployeesWeekTable(){
       if(p.trainStart&&p.trainEnd&&p.type==='work')stats.train++;
     }
 
+    // Должность отображается рядом с ФИО
     html+=`<div class="emp-row-week">
       <div class="emp-row-header">
-        <div class="fio">${empFIO(emp)}</div>
+        <div class="fio">${empFIO(emp)}${emp.position?`<span class="pos">${emp.position}</span>`:''}</div>
         <div class="stats">
           <span>✅ <b>${stats.work}</b></span>
           <span>🏥 <b>${stats.sick}</b></span>
@@ -1425,14 +1430,16 @@ function addEmployee(){
   const last=document.getElementById('newLastName').value.trim();
   const first=document.getElementById('newFirstName').value.trim();
   const middle=document.getElementById('newMiddleName').value.trim();
+  const position=document.getElementById('newPosition').value.trim();
   if(!last)return showToast('Укажите фамилию',true);
   const emps=loadEmployees();
   const id='e'+Date.now();
-  emps.push({id,last,first,middle});
+  emps.push({id,last,first,middle,position});
   saveEmployees(emps);
   document.getElementById('newLastName').value='';
   document.getElementById('newFirstName').value='';
   document.getElementById('newMiddleName').value='';
+  document.getElementById('newPosition').value='';
   renderEmployeesWeekTable();
   showToast('✅ Сотрудник добавлен');
 }
@@ -1595,16 +1602,15 @@ function exportCSV(){
   const plan=loadEmpPlan();
   emps.forEach(emp=>{
     Object.entries(plan[emp.id]||{}).forEach(([ds,p])=>{
-      rows.push(['План',ds,empFIO(emp),p.type,p.shift||'',(p.inTime||'')+'-'+(p.outTime||''),(p.trainStart||'')+'-'+(p.trainEnd||'')]);
+      rows.push(['План',ds,empFIO(emp)+' ('+(emp.position||'—')+')',p.type,p.shift||'',(p.inTime||'')+'-'+(p.outTime||''),(p.trainStart||'')+'-'+(p.trainEnd||'')]);
     });
   });
   loadSupplies().forEach(s=>rows.push(['Поставка',s.date,s.time,'','','','']));
-  // Планы
   const plans=loadPlans();
   ['revenue','sbp','services'].forEach(type=>{
     ['day','week','month'].forEach(period=>{
       const p=plans[type][period];
-      if(!p.disabled && p.value>0) rows.push(['План',`${type}_${period}`,p.value,'','','','']);
+      if(!p.disabled && p.value>0) rows.push(['План',`${type}_${period}`,p.value,planUnit(type),'','','']);
     });
   });
   const csv='\uFEFF'+rows.map(r=>r.map(c=>`"${c}"`).join(';')).join('\n');
@@ -1668,7 +1674,7 @@ async function recalculate(){
   renderHourlyChart(data);
   renderHeatmap(date);
   renderStaffTable(data);
-  renderShiftCalendar(date);
+  renderShiftCalendar(date); // теперь из планирования
   renderSupplyList();
   renderPlanDashboard();
   renderPlanForm();
