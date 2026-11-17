@@ -9,12 +9,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>DAB · Новокузнецк · Дашборд</title>
 <style>
-  :root {
-    --bg:#0f172a; --panel:#1e293b; --panel2:#273449;
-    --text:#e2e8f0; --muted:#94a3b8;
-    --green:#22c55e; --yellow:#eab308; --red:#ef4444;
-    --blue:#3b82f6; --accent:#8b5cf6; --border:#334155;
-    --pink:#ec4899; --orange:#f97316; --cyan:#06b6d4;
+  :root{
+    --bg:#0f172a;--panel:#1e293b;--panel2:#273449;
+    --text:#e2e8f0;--muted:#94a3b8;
+    --green:#22c55e;--yellow:#eab308;--red:#ef4444;
+    --blue:#3b82f6;--accent:#8b5cf6;--border:#334155;
+    --pink:#ec4899;--orange:#f97316;--cyan:#06b6d4;
+    --purple:#a855f7;
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
@@ -23,7 +24,6 @@
     padding:calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));font-size:14px;line-height:1.4}
   @media(max-width:640px){body{padding:calc(12px + var(--safe-top)) 12px calc(12px + var(--safe-bottom))}}
 
-  /* Вкладки */
   .tabs{display:flex;gap:6px;margin-bottom:20px;background:var(--panel);padding:6px;border-radius:10px;
     border:1px solid var(--border);overflow-x:auto}
   .tab{flex:1;padding:10px 18px;border-radius:8px;background:transparent;border:none;color:var(--muted);
@@ -47,6 +47,7 @@
   .btn.pink{background:var(--pink)} .btn.green{background:var(--green)}
   .btn.orange{background:var(--orange)} .btn.red{background:var(--red)}
   .btn.cyan{background:var(--cyan);color:#0f172a}
+  .btn.purple{background:var(--purple)}
   .btn.small{padding:5px 10px;font-size:11px}
 
   .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
@@ -99,6 +100,7 @@
     justify-content:center;font-weight:700;font-size:13px;cursor:pointer;color:#0f172a;position:relative}
   .hm-cell .hm-sub{font-size:9px;opacity:.8}
   .hm-cell.supply-hour{box-shadow:0 0 0 3px var(--orange) inset}
+  .hm-cell.training-hour{box-shadow:0 0 0 3px var(--purple) inset}
   .hm-day-row td:first-child{text-align:left;padding:6px 8px;background:var(--panel2);
     border-radius:6px;font-size:12px}
   .day-tags{display:flex;gap:3px;margin-top:4px;flex-wrap:wrap}
@@ -106,7 +108,7 @@
   .tag-holiday{background:rgba(239,68,68,.2);color:var(--red)}
   .tag-supply{background:rgba(249,115,22,.2);color:var(--orange)}
   .tag-sale{background:rgba(236,72,153,.2);color:var(--pink)}
-  .tag-none{background:rgba(148,163,184,.2);color:var(--muted)}
+  .tag-training{background:rgba(168,85,247,.2);color:var(--purple)}
 
   .staff-table{width:100%;border-collapse:collapse;font-size:13px}
   .staff-table th{text-align:left;padding:8px 6px;color:var(--muted);font-size:11px;
@@ -125,7 +127,6 @@
   .date-picker input,.date-picker select{background:var(--panel2);border:1px solid var(--border);
     color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;font-family:inherit}
 
-  /* График смен */
   .shift-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
   @media(max-width:720px){.shift-calendar{grid-template-columns:repeat(2,1fr)}}
   .shift-day{background:var(--panel2);border-radius:8px;padding:10px;border:2px solid transparent;position:relative}
@@ -146,7 +147,6 @@
   .supply-time-badge{background:var(--orange);color:#0f172a;font-size:9px;font-weight:700;
     padding:2px 6px;border-radius:8px;margin-top:6px;display:inline-block}
 
-  /* Распродажа */
   .sale-form{display:flex;gap:8px;align-items:flex-end;margin-bottom:14px;padding:12px;
     background:rgba(236,72,153,.1);border:1px solid var(--pink);border-radius:8px;flex-wrap:wrap}
   .sale-form .fld{flex:1;min-width:120px}
@@ -155,7 +155,6 @@
   .sale-form input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);
     padding:8px 10px;border-radius:6px;font-size:13px}
 
-  /* Поставка на дашборде */
   .supply-form{display:flex;gap:8px;align-items:flex-end;margin-bottom:14px;padding:12px;
     background:rgba(249,115,22,.1);border:1px solid var(--orange);border-radius:8px;flex-wrap:wrap}
   .supply-form .fld{flex:1;min-width:120px}
@@ -168,14 +167,7 @@
     padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:6px}
   .supply-chip button{background:none;border:none;color:var(--red);cursor:pointer;font-weight:700;font-size:13px}
 
-  /* Сотрудники: полный список */
-  .emp-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-  .emp-row{display:flex;gap:8px;align-items:center;padding:10px 12px;background:var(--panel2);
-    border-radius:8px;border-left:3px solid var(--accent)}
-  .emp-row .info{flex:1}
-  .emp-row .fio{font-weight:700;font-size:13px}
-  .emp-row .meta{font-size:11px;color:var(--muted);margin-top:2px}
-  .emp-row button{background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;padding:4px}
+  /* Список сотрудников */
   .add-emp-form{display:flex;gap:8px;align-items:flex-end;padding:12px;background:var(--panel2);
     border-radius:8px;flex-wrap:wrap;margin-bottom:14px}
   .add-emp-form .fld{flex:1;min-width:140px}
@@ -183,44 +175,68 @@
   .add-emp-form input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);
     padding:8px 10px;border-radius:6px;font-size:13px;font-family:inherit}
 
-  /* Кабинет сотрудника — неделя */
-  .emp-selector{display:flex;gap:10px;align-items:center;margin-bottom:16px;padding:14px;
-    background:var(--panel2);border-radius:10px;flex-wrap:wrap}
-  .emp-selector select{flex:1;min-width:200px;background:var(--panel);border:1px solid var(--border);
-    color:var(--text);padding:11px 14px;border-radius:8px;font-size:15px;font-weight:600;font-family:inherit}
-  .emp-week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-  @media(max-width:900px){.emp-week{grid-template-columns:1fr}}
-  .emp-day{background:var(--panel2);border-radius:10px;padding:12px;border:2px solid transparent}
-  .emp-day.work{border-color:var(--green)}
-  .emp-day.sick{border-color:var(--red);background:rgba(239,68,68,.08)}
-  .emp-day.off{border-color:var(--muted);background:rgba(148,163,184,.08)}
-  .emp-day.today{box-shadow:0 0 0 2px var(--pink)}
-  .ed-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-  .ed-date{font-size:14px;font-weight:700} .ed-dow{font-size:11px;color:var(--muted)}
-  .ed-label{font-size:11px;padding:3px 10px;border-radius:12px;display:inline-block;
-    font-weight:600;margin-bottom:8px}
-  .ed-label.work{background:rgba(34,197,94,.2);color:var(--green)}
-  .ed-label.sick{background:rgba(239,68,68,.2);color:var(--red)}
-  .ed-label.off{background:rgba(148,163,184,.2);color:var(--muted)}
-  .ed-buttons{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:10px}
-  .ed-buttons button{padding:7px 6px;border-radius:6px;border:1px solid var(--border);
-    background:var(--panel);color:var(--text);cursor:pointer;font-size:11px;font-weight:600;font-family:inherit}
-  .ed-buttons button.active{background:var(--accent);color:white;border-color:var(--accent)}
-  .ed-buttons button.sick.active{background:var(--red);border-color:var(--red)}
-  .ed-buttons button.off.active{background:var(--muted);color:#0f172a;border-color:var(--muted)}
-  .ed-shift-choose{margin-bottom:8px}
-  .ed-shift-choose label{font-size:10px;color:var(--muted);display:block;margin-bottom:4px}
-  .ed-shift-choose select{width:100%;background:var(--panel);border:1px solid var(--border);
-    color:var(--text);padding:6px 8px;border-radius:6px;font-size:12px;font-family:inherit}
-  .ed-time-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
-  .ed-time-row label{font-size:10px;color:var(--muted);display:block;margin-bottom:3px}
-  .ed-time-row input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);
-    padding:6px 8px;border-radius:6px;font-size:12px;font-family:monospace;font-weight:600}
-  .emp-summary{margin-top:16px;padding:14px;background:var(--panel2);border-radius:10px;
-    display:flex;gap:24px;flex-wrap:wrap;font-size:13px}
-  .emp-summary .stat b{font-size:18px;display:block;margin-top:2px}
+  /* Планирование всех сотрудников */
+  .emp-week-table{display:flex;flex-direction:column;gap:8px}
+  .emp-row-week{background:var(--panel2);border-radius:10px;padding:12px;border-left:4px solid var(--accent)}
+  .emp-row-header{display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:10px;flex-wrap:wrap;gap:8px}
+  .emp-row-header .fio{font-weight:700;font-size:14px}
+  .emp-row-header .stats{font-size:11px;color:var(--muted);display:flex;gap:12px}
+  .emp-row-header .stats span b{font-size:12px}
+  .emp-days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  @media(max-width:900px){.emp-days-grid{grid-template-columns:repeat(2,1fr)}}
+  .emp-day-mini{background:var(--panel);border-radius:6px;padding:8px;border:1.5px solid transparent;text-align:center}
+  .emp-day-mini.work{border-color:var(--green)}
+  .emp-day-mini.sick{border-color:var(--red);background:rgba(239,68,68,.08)}
+  .emp-day-mini.off{border-color:var(--muted);background:rgba(148,163,184,.08)}
+  .emp-day-mini.training{border-color:var(--purple);background:rgba(168,85,247,.08)}
+  .emp-day-mini.today{box-shadow:0 0 0 2px var(--pink)}
+  .emp-day-mini .day-name{font-size:10px;color:var(--muted);margin-bottom:2px}
+  .emp-day-mini .day-num{font-size:13px;font-weight:700;margin-bottom:4px}
+  .emp-day-mini .mini-btns{display:flex;gap:2px;justify-content:center;margin-bottom:4px;flex-wrap:wrap}
+  .emp-day-mini .mini-btns button{width:22px;height:22px;border-radius:4px;border:1px solid var(--border);
+    background:var(--panel2);cursor:pointer;font-size:11px;padding:0;color:var(--text)}
+  .emp-day-mini .mini-btns button.active{background:var(--accent);color:white;border-color:var(--accent)}
+  .emp-day-mini .mini-btns button.sick.active{background:var(--red);border-color:var(--red)}
+  .emp-day-mini .mini-btns button.off.active{background:var(--muted);color:#0f172a;border-color:var(--muted)}
+  .emp-day-mini .mini-btns button.training.active{background:var(--purple);border-color:var(--purple)}
+  .emp-day-mini .mini-shift{width:100%;background:var(--panel2);border:1px solid var(--border);
+    color:var(--text);padding:2px;border-radius:4px;font-size:9px;font-family:inherit;margin-bottom:3px}
+  .emp-day-mini .mini-time{display:flex;gap:2px}
+  .emp-day-mini .mini-time input{width:100%;background:var(--panel2);border:1px solid var(--border);
+    color:var(--text);padding:2px;border-radius:4px;font-size:9px;font-family:monospace;text-align:center}
+  .emp-day-mini .training-badge{font-size:9px;background:var(--purple);color:white;padding:2px 4px;
+    border-radius:6px;margin-top:3px;display:inline-block;font-weight:600;width:100%}
+  .emp-day-mini .tag-line{font-size:8px;margin-top:3px;color:var(--orange)}
+  .emp-actions{display:flex;justify-content:flex-end;margin-top:8px}
+  .emp-actions button{background:none;border:1px solid var(--border);color:var(--red);
+    cursor:pointer;padding:3px 8px;border-radius:6px;font-size:11px;font-family:inherit}
 
-  /* Выручка */
+  /* ===== МОДАЛЬНОЕ ОКНО ОБУЧЕНИЯ ===== */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
+    z-index:10000;align-items:center;justify-content:center;padding:20px}
+  .modal-overlay.show{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--purple);border-radius:14px;
+    padding:20px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .modal h3{font-size:16px;margin-bottom:6px;color:var(--purple);display:flex;align-items:center;gap:8px}
+  .modal .modal-sub{font-size:12px;color:var(--muted);margin-bottom:16px}
+  .modal .time-label{font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;margin-bottom:6px;display:block}
+  .time-scroll{max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;
+    background:var(--panel2);margin-bottom:14px;padding:4px}
+  .time-scroll::-webkit-scrollbar{width:8px}
+  .time-scroll::-webkit-scrollbar-track{background:var(--panel2);border-radius:4px}
+  .time-scroll::-webkit-scrollbar-thumb{background:var(--purple);border-radius:4px}
+  .time-option{padding:8px 12px;border-radius:6px;cursor:pointer;font-size:13px;
+    font-family:monospace;font-weight:600;transition:background .15s}
+  .time-option:hover{background:rgba(168,85,247,.2)}
+  .time-option.selected{background:var(--purple);color:white}
+  .time-option.taken{opacity:.4;cursor:not-allowed;text-decoration:line-through}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+  .modal-clear{background:transparent;border:1px solid var(--red);color:var(--red);
+    padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit}
+
+  .empty-state{text-align:center;padding:30px;color:var(--muted);font-size:13px}
+
   .rev-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
   .rev-field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase}
   .rev-field input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);
@@ -248,7 +264,6 @@
 </head>
 <body>
 
-<!-- ВКЛАДКИ -->
 <div class="tabs">
   <button class="tab active" onclick="switchTab('dashboard')">📊 Дашборд</button>
   <button class="tab" onclick="switchTab('employees')">👥 Сотрудники</button>
@@ -275,19 +290,17 @@
 
   <div class="kpi-row" id="kpiRow"></div>
 
-  <!-- Поставка -->
   <div class="card">
-    <h2>📦 Поставка <span class="badge">ручное время · учитывается в графике</span></h2>
+    <h2>📦 Поставка <span class="badge">только вручную</span></h2>
     <div class="supply-form">
       <div class="fld"><label>Дата</label><input type="date" id="supplyDate"></div>
       <div class="fld"><label>Время</label><input type="time" id="supplyTime" value="10:00"></div>
       <button class="btn orange" onclick="addSupply()">+ Добавить</button>
     </div>
     <div class="supply-list" id="supplyList"></div>
-    <p class="hint">Поставка автоматически добавляет коэффициент к прогнозу и подсвечивается в графике смен.</p>
+    <p class="hint">Поставка учитывается в прогнозе и подсвечивается в графике только если вы её добавили.</p>
   </div>
 
-  <!-- Распродажа -->
   <div class="card">
     <h2>🏷️ Период распродажи <span class="badge">влияет на прогноз</span></h2>
     <div class="sale-form">
@@ -299,7 +312,6 @@
     <p class="hint" id="saleStatus">Период не задан — автоматически 15–30 число</p>
   </div>
 
-  <!-- График смен -->
   <div class="card">
     <h2>📅 График смен <span class="badge">базовое число сотрудников</span></h2>
     <div class="shift-calendar" id="shiftCalendar"></div>
@@ -326,6 +338,7 @@
       <div class="lg-item"><span class="swatch" style="background:#f97316">выс</span>Высокая</div>
       <div class="lg-item"><span class="swatch" style="background:#ef4444">пик</span>Пик</div>
       <div class="lg-item"><span class="swatch" style="background:rgba(249,115,22,.5);color:var(--orange)">📦</span>Час поставки</div>
+      <div class="lg-item"><span class="swatch" style="background:rgba(168,85,247,.5);color:var(--purple)">🎓</span>Обучение</div>
     </div>
     <div style="overflow-x:auto;"><table class="heatmap-table" id="heatmap"></table></div>
   </div>
@@ -346,10 +359,9 @@
 <div class="view" id="view-employees">
   <div class="header">
     <div><h1>👥 Сотрудники</h1>
-      <p class="subtitle">Полный список · фильтр по одному · планирование смен</p></div>
+      <p class="subtitle">Добавление · планирование всех сотрудников на неделю</p></div>
   </div>
 
-  <!-- Добавление -->
   <div class="card">
     <h2>➕ Добавить сотрудника</h2>
     <div class="add-emp-form">
@@ -360,21 +372,10 @@
     </div>
   </div>
 
-  <!-- Список -->
   <div class="card">
-    <h2>📋 Все сотрудники <span class="badge" id="empCount">0</span></h2>
-    <div class="emp-list" id="empList"></div>
-  </div>
-
-  <!-- Кабинет выбранного -->
-  <div class="card">
-    <h2>🗓 Планирование на неделю</h2>
-    <div class="emp-selector">
-      <label style="font-size:13px;color:var(--muted);">Сотрудник:</label>
-      <select id="employeeSelect" onchange="renderEmployeeWeek()"></select>
-    </div>
-    <div class="emp-week" id="empWeek"></div>
-    <div class="emp-summary" id="empSummary"></div>
+    <h2>🗓 Планирование на неделю · все сотрудники <span class="badge" id="empCount">0</span></h2>
+    <p class="hint" style="margin-bottom:14px;">Для каждого сотрудника отметьте дни: ✅ работа, 🏥 больничный, 🏖️ выходной, 🎓 обучение/meeting. Для рабочих дней можно выбрать смену и скорректировать время прихода/ухода.</p>
+    <div class="emp-week-table" id="empWeekTable"></div>
   </div>
 </div>
 
@@ -412,6 +413,26 @@
   </div>
 </div>
 
+<!-- ===== МОДАЛЬНОЕ ОКНО ОБУЧЕНИЯ ===== -->
+<div class="modal-overlay" id="trainingModal" onclick="if(event.target===this)closeTrainingModal()">
+  <div class="modal">
+    <h3>🎓 Обучение / Meeting</h3>
+    <p class="modal-sub" id="trainingModalSub">Выберите время начала и окончания</p>
+
+    <label class="time-label">Начало</label>
+    <div class="time-scroll" id="startTimeScroll"></div>
+
+    <label class="time-label">Окончание</label>
+    <div class="time-scroll" id="endTimeScroll"></div>
+
+    <div class="modal-actions">
+      <button class="modal-clear" onclick="clearTraining()">🗑 Убрать обучение</button>
+      <button class="btn secondary" onclick="closeTrainingModal()">Отмена</button>
+      <button class="btn purple" onclick="saveTraining()">💾 Применить</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -436,67 +457,74 @@ const HOLIDAY_COEF={
   '02-23':1.5,'03-08':1.7,'05-01':1.6,'05-09':1.6,'06-12':1.4,'11-04':1.4
 };
 
+// Список времени с шагом 30 минут: 10:00 – 22:00
+const TIME_OPTIONS = (function(){
+  const arr=[];
+  for(let h=10;h<=22;h++){
+    arr.push(String(h).padStart(2,'0')+':00');
+    if(h<22) arr.push(String(h).padStart(2,'0')+':30');
+  }
+  return arr;
+})();
+
 /* ===================== ХРАНИЛИЩА ===================== */
 const KEYS={
-  rev:'dab_rev_v4',
-  shifts:'dab_shifts_v4',
-  supply:'dab_supply_v4',          // [{date:'YYYY-MM-DD', time:'HH:MM'}]
-  sale:'dab_sale_v4',
-  saleOff:'dab_sale_off_v4',
-  employees:'dab_employees_v4',    // [{last,first,middle,id}]
-  empPlan:'dab_emp_plan_v4',
-  weather:'dab_weather_cache_v4'
+  rev:'dab_rev_v5',
+  shifts:'dab_shifts_v5',
+  supply:'dab_supply_v5',
+  sale:'dab_sale_v5',
+  saleOff:'dab_sale_off_v5',
+  employees:'dab_employees_v5',
+  empPlan:'dab_emp_plan_v5',
+  weather:'dab_weather_cache_v5'
 };
 
 function load(key,def={}){try{return JSON.parse(localStorage.getItem(key))||def}catch(e){return def}}
 function save(key,obj){localStorage.setItem(key,JSON.stringify(obj))}
 
-/* --- Смены --- */
 function loadShifts(){return load(KEYS.shifts)}
 function getShiftForDate(ds){const all=loadShifts();return all[ds]||{s1:3,s2:3}}
 function setShiftForDate(ds,s1,s2){const all=loadShifts();all[ds]={s1:Math.max(0,s1),s2:Math.max(0,s2)};save(KEYS.shifts,all)}
 
-/* --- Сотрудники --- */
 function loadEmployees(){
-  const raw = load(KEYS.employees, null);
-  if (raw && Array.isArray(raw) && raw.length && typeof raw[0]==='object') return raw;
-  // миграция со старого формата (строки) или дефолт
-  const defaults = [
+  const raw=load(KEYS.employees,null);
+  if(raw&&Array.isArray(raw)&&raw.length&&typeof raw[0]==='object')return raw;
+  const defaults=[
     {id:'e1',last:'Иванова',first:'Анна',middle:'Сергеевна'},
     {id:'e2',last:'Петров',first:'Сергей',middle:'Иванович'},
     {id:'e3',last:'Сидорова',first:'Елена',middle:''},
     {id:'e4',last:'Козлов',first:'Дмитрий',middle:'Алексеевич'}
   ];
-  save(KEYS.employees, defaults);
+  save(KEYS.employees,defaults);
   return defaults;
 }
 function saveEmployees(arr){save(KEYS.employees,arr)}
 function empFIO(e){return [e.last,e.first,e.middle].filter(Boolean).join(' ')}
-function empShort(e){return e.last + ' ' + (e.first?e.first[0]+'.':'')}
 
 function loadEmpPlan(){return load(KEYS.empPlan,{})}
-function getEmpPlanDay(empId,ds){const all=loadEmpPlan();return (all[empId]&&all[empId][ds])||{type:'work',shift:'both',inTime:'',outTime:''}}
+function getEmpPlanDay(empId,ds){
+  const all=loadEmpPlan();
+  const p=(all[empId]&&all[empId][ds])||{type:'work',shift:'both',inTime:'',outTime:'',trainStart:'',trainEnd:''};
+  // Совместимость: гарантируем поля обучения
+  if(p.trainStart===undefined)p.trainStart='';
+  if(p.trainEnd===undefined)p.trainEnd='';
+  return p;
+}
 function setEmpPlanDay(empId,ds,data){const all=loadEmpPlan();if(!all[empId])all[empId]={};all[empId][ds]=data;save(KEYS.empPlan,all)}
 
-/* --- Распродажа --- */
 function loadSale(){return load(KEYS.sale,{start:'',end:''})}
 function isSaleDisabled(){return localStorage.getItem(KEYS.saleOff)==='1'}
 
-/* --- Поставки (с временем) --- */
 function loadSupplies(){
-  const arr = load(KEYS.supply, []);
-  // Миграция со старого формата (массив строк)
-  if (arr.length && typeof arr[0]==='string') {
-    const migrated = arr.map(ds=>({date:ds, time:'10:00'}));
-    save(KEYS.supply, migrated);
-    return migrated;
+  const arr=load(KEYS.supply,[]);
+  if(arr.length&&typeof arr[0]==='string'){
+    const migrated=arr.map(ds=>({date:ds,time:'10:00'}));
+    save(KEYS.supply,migrated);return migrated;
   }
   return arr;
 }
 function saveSupplies(arr){save(KEYS.supply,arr)}
 function getSupplyForDate(ds){return loadSupplies().find(s=>s.date===ds)||null}
-function isAutoSupply(d){const doy=Math.floor((d-new Date(d.getFullYear(),0,0))/86400000);return doy%14===0}
-function isSupplyDay(d,ds){return isAutoSupply(d)||!!getSupplyForDate(ds)}
 
 /* ===================== ПОГОДА ===================== */
 const NOVOKUZNETSK={lat:53.7557,lon:87.1099};
@@ -552,7 +580,7 @@ function getSaleCoef(d){
 
 function isSalaryDay(d){const day=d.getDate();return(day>=5&&day<=10)||(day>=20&&day<=25)}
 
-/* Доступность с учётом планов сотрудников */
+/* Доступность с учётом планов сотрудников + обучение */
 function availableStaffForDay(ds,hour){
   const base=getShiftForDate(ds);
   let baseCount=0;
@@ -564,18 +592,42 @@ function availableStaffForDay(ds,hour){
   emps.forEach(emp=>{
     const plan=getEmpPlanDay(emp.id,ds);
     if(plan.type==='sick'||plan.type==='off')return;
+
+    // Если в этот час идёт обучение — сотрудник недоступен
+    if(plan.trainStart&&plan.trainEnd){
+      const th=hour;
+      const ts=hourFromTime(plan.trainStart);
+      const te=hourFromTime(plan.trainEnd);
+      if(th>=ts && th<te) return; // на обучении
+    }
+
     const inH=hourFromTime(plan.inTime);
     const outH=hourFromTime(plan.outTime);
     let sh,eh;
-    if(plan.shift==='s1'){sh=isNaN(inH)||inH===null?10:inH;eh=isNaN(outH)||outH===null?17:outH}
-    else if(plan.shift==='s2'){sh=isNaN(inH)||inH===null?14:inH;eh=isNaN(outH)||outH===null?21:outH}
-    else{sh=isNaN(inH)||inH===null?10:inH;eh=isNaN(outH)||outH===null?21:outH}
+    if(plan.shift==='s1'){sh=(inH===null||isNaN(inH))?10:inH;eh=(outH===null||isNaN(outH))?17:outH}
+    else if(plan.shift==='s2'){sh=(inH===null||isNaN(inH))?14:inH;eh=(outH===null||isNaN(outH))?21:outH}
+    else{sh=(inH===null||isNaN(inH))?10:inH;eh=(outH===null||isNaN(outH))?21:outH}
     if(hour>=sh&&hour<=eh)available++;
   });
 
   const sickOff=emps.filter(e=>{const p=getEmpPlanDay(e.id,ds);return p.type==='sick'||p.type==='off'}).length;
   const effectiveBase=Math.max(0,baseCount-sickOff);
   return Math.max(effectiveBase,available);
+}
+
+/* Есть ли обучение у кого-либо в этот час */
+function trainingAtHour(ds,hour){
+  const emps=loadEmployees();
+  for(const emp of emps){
+    const plan=getEmpPlanDay(emp.id,ds);
+    if(plan.type!=='work')continue;
+    if(plan.trainStart&&plan.trainEnd){
+      const ts=hourFromTime(plan.trainStart);
+      const te=hourFromTime(plan.trainEnd);
+      if(hour>=ts && hour<te) return true;
+    }
+  }
+  return false;
 }
 
 /* ===================== РАСЧЁТ ДНЯ ===================== */
@@ -595,12 +647,9 @@ async function calculateDay(d){
   const w=weatherToCoef(weatherData);
   factors.push({icon:w.icon,text:`Погода: ${w.text}`,coef:w.coef,cls:w.cls});
 
-  // Поставка — с временем
-  const supply = getSupplyForDate(ds);
+  const supply=getSupplyForDate(ds);
   if(supply){
     factors.push({icon:'📦',text:`Поставка в ${supply.time}`,coef:1.15,cls:'green'});
-  } else if(isAutoSupply(d)){
-    factors.push({icon:'📦',text:'Поставка (авто)',coef:1.15,cls:'green'});
   } else {
     factors.push({icon:'📦',text:'Без поставки',coef:1.0,cls:'yellow'});
   }
@@ -611,18 +660,15 @@ async function calculateDay(d){
   const totalCoef=factors.reduce((a,f)=>a*f.coef,1);
   const visitors=Math.round(BASE_TRAFFIC*totalCoef);
 
-  // Почасовой прогноз + учёт часа поставки
   let hourly=HOUR_PROFILE.map(p=>Math.max(1,Math.round(visitors*p)));
   if(supply){
-    const supHour = hourFromTime(supply.time);
-    const idx = HOURS.indexOf(supHour);
-    if(idx >= 0) hourly[idx] = Math.round(hourly[idx] * 1.20); // +20% в час поставки
+    const idx=HOURS.indexOf(hourFromTime(supply.time));
+    if(idx>=0)hourly[idx]=Math.round(hourly[idx]*1.20);
   }
 
   return{factors,totalCoef,visitors,hourly,dateStr:ds,weatherData,supply};
 }
 
-/* Синхронная версия для тепловой карты */
 function calculateDaySync(d){
   const dow=d.getDay();
   const mmdd=String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -631,7 +677,7 @@ function calculateDaySync(d){
   if(HOLIDAYS[mmdd])coef*=(HOLIDAY_COEF[mmdd]||1.5);
   coef*=isSalaryDay(d)?1.3:1.0;
   if(weatherCache.data)coef*=weatherToCoef(weatherCache.data).coef;
-  coef*=isSupplyDay(d,ds)?1.15:1.0;
+  if(getSupplyForDate(ds))coef*=1.15;
   coef*=getSaleCoef(d).coef;
   const visitors=Math.round(BASE_TRAFFIC*coef);
   let hourly=HOUR_PROFILE.map(p=>Math.max(1,Math.round(visitors*p)));
@@ -649,11 +695,11 @@ function switchTab(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelector(`.tab[onclick*="'${name}'"]`).classList.add('active');
   document.getElementById('view-'+name).classList.add('active');
-  if(name==='employees'){renderEmployeesList();renderEmployeeSelect();renderEmployeeWeek()}
+  if(name==='employees')renderEmployeesWeekTable();
   if(name==='revenue')renderRevenue();
 }
 
-/* ===================== ДАШБОРД: РЕНДЕР ===================== */
+/* ===================== ДАШБОРД ===================== */
 function renderWeatherBadge(data){
   const el=document.getElementById('weatherBadge');
   if(!data){el.textContent='🌡️ Погода недоступна';return}
@@ -697,9 +743,12 @@ function renderHourlyChart(data){
   document.getElementById('hourlyChart').innerHTML=data.hourly.map((v,i)=>{
     const h=(v/max)*100;
     let c='#3b82f6';if(v/max>0.7)c='#ef4444';else if(v/max>0.4)c='#eab308';
-    const isSupplyHour = supply && hourFromTime(supply.time)===HOURS[i];
-    const label = isSupplyHour ? `📦 ${HOURS[i]}` : HOURS[i];
-    return `<div class="bar" style="height:${h}%;background:${c};${isSupplyHour?'box-shadow:0 0 0 2px var(--orange) inset;':''}" title="${HOURS[i]}:00 — ${v} чел.${isSupplyHour?' · поставка':''}"><span class="bar-label">${label}</span></div>`;
+    const isSupplyHour=supply&&hourFromTime(supply.time)===HOURS[i];
+    const isTrain=trainingAtHour(data.dateStr,HOURS[i]);
+    let extra='';let lbl=HOURS[i];
+    if(isSupplyHour){extra+=';box-shadow:0 0 0 2px var(--orange) inset';lbl='📦 '+HOURS[i]}
+    if(isTrain){extra+=';box-shadow:0 0 0 2px var(--purple) inset';lbl='🎓 '+HOURS[i]}
+    return `<div class="bar" style="height:${h}%;background:${c}${extra}" title="${HOURS[i]}:00 — ${v} чел.${isSupplyHour?' · поставка':''}${isTrain?' · обучение':''}"><span class="bar-label">${lbl}</span></div>`;
   }).join('');
 }
 
@@ -720,24 +769,26 @@ function renderShiftCalendar(centerDate){
     const mmdd=String(cur.getMonth()+1).padStart(2,'0')+'-'+String(cur.getDate()).padStart(2,'0');
     const hol=HOLIDAYS[mmdd];
     const customSup=supplies.find(s=>s.date===ds);
-    const autoSup=isAutoSupply(cur);
-    const sup=customSup||autoSup;
-    const supTime=customSup?customSup.time:'10:00';
     const inSale=!saleOff&&sale.start&&sale.end&&ds>=sale.start&&ds<=sale.end;
     const shift=shifts[ds]||{s1:3,s2:3};
+    const trainExists=(function(){
+      const emps=loadEmployees();
+      return emps.some(e=>{const p=getEmpPlanDay(e.id,ds);return p.trainStart&&p.trainEnd&&p.type==='work'});
+    })();
 
     const cls=['shift-day'];
     if(ds===todayStr)cls.push('today');
     if(hol)cls.push('holiday');
-    if(sup)cls.push('supply');
+    if(customSup)cls.push('supply');
     if(inSale)cls.push('sale');
 
     html+=`<div class="${cls.join(' ')}">
       <div class="sd-head"><span class="sd-date">${cur.getDate()}.${String(cur.getMonth()+1).padStart(2,'0')}</span><span class="sd-dow">${DOW_NAMES[cur.getDay()]}</span></div>
       <div class="sd-tags">
         ${hol?`<span class="day-tag tag-holiday">🎉</span>`:''}
-        ${sup?`<span class="day-tag tag-supply">📦 ${customSup?supTime:'авто'}</span>`:''}
+        ${customSup?`<span class="day-tag tag-supply">📦 ${customSup.time}</span>`:''}
         ${inSale?`<span class="day-tag tag-sale">🏷️</span>`:''}
+        ${trainExists?`<span class="day-tag tag-training">🎓</span>`:''}
       </div>
       <div class="shift-row"><span class="s-label">10:00</span>
         <button class="s-btn" onclick="changeShift('${ds}',-1,0)">−</button>
@@ -749,7 +800,7 @@ function renderShiftCalendar(centerDate){
         <input class="s-input" type="number" min="0" max="20" value="${shift.s2}" onchange="changeShift('${ds}','set',1,this.value)">
         <button class="s-btn" onclick="changeShift('${ds}',0,1)">+</button>
       </div>
-      ${customSup?`<div class="supply-time-badge">📦 ${supTime}</div>`:''}
+      ${customSup?`<div class="supply-time-badge">📦 ${customSup.time}</div>`:''}
     </div>`;
   }
   document.getElementById('shiftCalendar').innerHTML=html;
@@ -783,19 +834,21 @@ function renderHeatmap(date){
     const mmdd=String(cur.getMonth()+1).padStart(2,'0')+'-'+String(cur.getDate()).padStart(2,'0');
     const hol=HOLIDAYS[mmdd];
     const customSup=getSupplyForDate(ds);
-    const autoSup=isAutoSupply(cur);
-    const sup=customSup||autoSup;
-    const supTime=customSup?customSup.time:null;
     const inSale=!saleOff&&sale.start&&sale.end&&ds>=sale.start&&ds<=sale.end;
     const dayTotal=data.hourly.reduce((a,b)=>a+b,0);
     const dayMax=Math.max(...data.hourly);
+    const trainDay=(function(){
+      const emps=loadEmployees();
+      return emps.some(e=>{const p=getEmpPlanDay(e.id,ds);return p.trainStart&&p.trainEnd&&p.type==='work'});
+    })();
 
     html+=`<tr class="hm-day-row"><td><b>${DOW_NAMES[cur.getDay()]}</b> ${cur.getDate()}.${cur.getMonth()+1}
       ${ds===todayStr?'<span style="font-size:9px;background:var(--pink);color:white;padding:1px 5px;border-radius:8px;margin-left:4px;">сегодня</span>':''}
       <div class="day-tags">
         ${hol?`<span class="day-tag tag-holiday">🎉 ${hol}</span>`:''}
-        ${sup?`<span class="day-tag tag-supply">📦 ${supTime||'авто'}</span>`:''}
+        ${customSup?`<span class="day-tag tag-supply">📦 ${customSup.time}</span>`:''}
         ${inSale?`<span class="day-tag tag-sale">🏷️</span>`:''}
+        ${trainDay?`<span class="day-tag tag-training">🎓</span>`:''}
       </div></td>`;
 
     data.hourly.forEach((v,i)=>{
@@ -807,8 +860,12 @@ function renderHeatmap(date){
       else if(ratio>0.3){bg='#eab308';sub=Math.round(ratio*100)+'%'}
       else{bg='#22c55e';sub=Math.round(ratio*100)+'%'}
       const color=bg==='#7f1d1d'?'#fff':'#0f172a';
-      const isSupplyHour = supTime && hourFromTime(supTime)===HOURS[i];
-      html+=`<td><div class="hm-cell ${isSupplyHour?'supply-hour':''}" style="background:${bg};color:${color}" onclick="selectDate('${ds}')">${v}<span class="hm-sub">${sub}</span></div></td>`;
+      const isSupplyHour=customSup&&hourFromTime(customSup.time)===HOURS[i];
+      const isTrain=trainingAtHour(ds,HOURS[i]);
+      let extraCls='';
+      if(isSupplyHour)extraCls+=' supply-hour';
+      if(isTrain)extraCls+=' training-hour';
+      html+=`<td><div class="hm-cell${extraCls}" style="background:${bg};color:${color}" onclick="selectDate('${ds}')">${v}<span class="hm-sub">${sub}</span></div></td>`;
     });
     html+=`<td><div style="font-weight:700;color:var(--accent);">${dayTotal}</div><div style="font-size:10px;color:var(--muted);">чел.</div></td></tr>`;
   });
@@ -827,16 +884,25 @@ function renderStaffTable(data){
     if(diff<=0){status='✅ OK';sc='ok'}
     else if(diff===1){status='⚠️ +1';sc='warn';deficit+=1}
     else{status=`🔴 +${diff}`;sc='bad';deficit+=diff}
-    const isSupply = data.supply && hourFromTime(data.supply.time)===hour;
-    rows+=`<tr><td>${hour}:00–${hour+1}:00${isSupply?' 📦':''}</td><td>${getShiftLabel(hour)}</td><td>${v}</td><td>${need}</td><td>${avail}</td><td>${diff>0?'+'+diff:'—'}</td><td><span class="status ${sc}">${status}</span></td></tr>`;
+    const isSupply=data.supply&&hourFromTime(data.supply.time)===hour;
+    const isTrain=trainingAtHour(data.dateStr,hour);
+    let icons='';
+    if(isSupply)icons+=' 📦';
+    if(isTrain)icons+=' 🎓';
+    rows+=`<tr><td>${hour}:00–${hour+1}:00${icons}</td><td>${getShiftLabel(hour)}</td><td>${v}</td><td>${need}</td><td>${avail}</td><td>${diff>0?'+'+diff:'—'}</td><td><span class="status ${sc}">${status}</span></td></tr>`;
   });
   document.getElementById('staffTable').innerHTML=rows;
 
   const extra=deficit>0?Math.ceil(deficit/4):0;
   const shift=getShiftForDate(data.dateStr);
   const emps=loadEmployees();
-  let sickCount=0,offCount=0;
-  emps.forEach(e=>{const p=getEmpPlanDay(e.id,data.dateStr);if(p.type==='sick')sickCount++;if(p.type==='off')offCount++});
+  let sickCount=0,offCount=0,trainCount=0;
+  emps.forEach(e=>{
+    const p=getEmpPlanDay(e.id,data.dateStr);
+    if(p.type==='sick')sickCount++;
+    if(p.type==='off')offCount++;
+    if(p.trainStart&&p.trainEnd&&p.type==='work')trainCount++;
+  });
 
   document.getElementById('staffSummary').innerHTML=`
     <div>📊 Нужно: <b>${totalNeeded}</b></div>
@@ -844,6 +910,7 @@ function renderStaffTable(data){
     <div>📅 База: <b>${shift.s1}+${shift.s2}</b></div>
     ${sickCount?`<div style="color:var(--red)">🏥 Больничных: <b>${sickCount}</b></div>`:''}
     ${offCount?`<div style="color:var(--muted)">🏖️ Выходных: <b>${offCount}</b></div>`:''}
+    ${trainCount?`<div style="color:var(--purple)">🎓 На обучении: <b>${trainCount}</b></div>`:''}
     <div style="color:${deficit>0?'var(--red)':'var(--green)'}">⚠️ Дефицит: <b>${deficit>0?'+'+deficit:'0'}</b></div>
     <div>💡 <b>${deficit>0?'Вызвать '+extra+' доп.':'Достаточно'}</b></div>`;
 }
@@ -852,8 +919,8 @@ function renderStaffTable(data){
 function addSupply(){
   const date=document.getElementById('supplyDate').value;
   const time=document.getElementById('supplyTime').value;
-  if(!date){return showToast('Укажите дату',true)}
-  if(!time){return showToast('Укажите время',true)}
+  if(!date)return showToast('Укажите дату',true);
+  if(!time)return showToast('Укажите время',true);
   const arr=loadSupplies();
   const idx=arr.findIndex(s=>s.date===date);
   if(idx>=0){arr[idx].time=time;showToast('📦 Поставка обновлена')}
@@ -870,33 +937,126 @@ function removeSupply(ds){
 function renderSupplyList(){
   const list=document.getElementById('supplyList');
   const arr=loadSupplies().sort((a,b)=>a.date.localeCompare(b.date));
-  if(!arr.length){list.innerHTML='<span style="font-size:11px;color:var(--muted);">Пользовательские поставки не заданы</span>';return}
+  if(!arr.length){list.innerHTML='<span style="font-size:11px;color:var(--muted);">Поставки не заданы</span>';return}
   list.innerHTML=arr.map(s=>`
     <div class="supply-chip">📦 ${new Date(s.date+'T00:00:00').toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})} в ${s.time}
     <button onclick="removeSupply('${s.date}')" title="Удалить">×</button></div>`).join('');
 }
 
-/* ===================== СОТРУДНИКИ ===================== */
-function renderEmployeesList(){
+/* ===================== СОТРУДНИКИ: планирование всех ===================== */
+function renderEmployeesWeekTable(){
   const emps=loadEmployees();
   document.getElementById('empCount').textContent=emps.length;
-  const list=document.getElementById('empList');
-  if(!emps.length){list.innerHTML='<p style="color:var(--muted);">Список пуст — добавьте сотрудника выше.</p>';return}
-  list.innerHTML=emps.map(e=>`
-    <div class="emp-row">
-      <div class="info">
-        <div class="fio">${empFIO(e)}</div>
-        <div class="meta">ID: ${e.id}</div>
+  const wrap=document.getElementById('empWeekTable');
+  if(!emps.length){
+    wrap.innerHTML='<div class="empty-state">Список сотрудников пуст — добавьте сотрудника выше.</div>';
+    return;
+  }
+
+  const today=new Date();
+  const dow=today.getDay();
+  const start=new Date(today);
+  start.setDate(today.getDate()+((dow===0)?-6:1-dow));
+  const todayStr=toDateStr(today);
+  const sale=loadSale();
+  const saleOff=isSaleDisabled();
+
+  let html='';
+  emps.forEach(emp=>{
+    // Статистика
+    let stats={work:0,sick:0,off:0,train:0};
+    for(let i=0;i<7;i++){
+      const cur=new Date(start);cur.setDate(start.getDate()+i);
+      const ds=toDateStr(cur);
+      const p=getEmpPlanDay(emp.id,ds);
+      if(p.type==='work')stats.work++;
+      else if(p.type==='sick')stats.sick++;
+      else stats.off++;
+      if(p.trainStart&&p.trainEnd&&p.type==='work')stats.train++;
+    }
+
+    html+=`<div class="emp-row-week">
+      <div class="emp-row-header">
+        <div class="fio">${empFIO(emp)}</div>
+        <div class="stats">
+          <span>✅ <b>${stats.work}</b></span>
+          <span>🏥 <b>${stats.sick}</b></span>
+          <span>🏖️ <b>${stats.off}</b></span>
+          <span>🎓 <b>${stats.train}</b></span>
+        </div>
       </div>
-      <button onclick="removeEmployee('${e.id}')" title="Удалить">🗑</button>
-    </div>`).join('');
+      <div class="emp-days-grid">`;
+
+    for(let i=0;i<7;i++){
+      const cur=new Date(start);cur.setDate(start.getDate()+i);
+      const ds=toDateStr(cur);
+      const p=getEmpPlanDay(emp.id,ds);
+      const isToday=ds===todayStr;
+      const inSale=!saleOff&&sale.start&&sale.end&&ds>=sale.start&&ds<=sale.end;
+      const sup=getSupplyForDate(ds);
+      const hasTraining=p.trainStart&&p.trainEnd&&p.type==='work';
+
+      const cls=['emp-day-mini',p.type];
+      if(hasTraining)cls.push('training');
+      if(isToday)cls.push('today');
+
+      html+=`<div class="${cls.join(' ')}">
+        <div class="day-name">${DOW_NAMES[cur.getDay()]}</div>
+        <div class="day-num">${cur.getDate()}.${String(cur.getMonth()+1).padStart(2,'0')}</div>
+        <div class="mini-btns">
+          <button class="${p.type==='work'?'active':''}" title="Работа" onclick="setType('${emp.id}','${ds}','work')">✅</button>
+          <button class="sick ${p.type==='sick'?'active':''}" title="Больничный" onclick="setType('${emp.id}','${ds}','sick')">🏥</button>
+          <button class="off ${p.type==='off'?'active':''}" title="Выходной" onclick="setType('${emp.id}','${ds}','off')">🏖️</button>
+          <button class="training ${hasTraining?'active':''}" title="Обучение/Meeting" onclick="openTrainingModal('${emp.id}','${ds}')">🎓</button>
+        </div>
+        ${p.type==='work'?`
+          <select class="mini-shift" onchange="updatePlan('${emp.id}','${ds}','shift',this.value)">
+            <option value="both" ${p.shift==='both'?'selected':''}>Обе</option>
+            <option value="s1" ${p.shift==='s1'?'selected':''}>1-я</option>
+            <option value="s2" ${p.shift==='s2'?'selected':''}>2-я</option>
+          </select>
+          <div class="mini-time">
+            <input type="time" value="${p.inTime||(p.shift==='s2'?'14:00':p.shift==='s1'?'10:00':'10:00')}" onchange="updatePlan('${emp.id}','${ds}','inTime',this.value)">
+            <input type="time" value="${p.outTime||(p.shift==='s2'?'22:00':p.shift==='s1'?'17:30':'17:30')}" onchange="updatePlan('${emp.id}','${ds}','outTime',this.value)">
+          </div>
+        `:''}
+        ${hasTraining?`<div class="training-badge">🎓 ${p.trainStart}–${p.trainEnd}</div>`:''}
+        ${inSale?`<div class="tag-line">🏷️</div>`:''}
+        ${sup?`<div class="tag-line">📦 ${sup.time}</div>`:''}
+      </div>`;
+    }
+
+    html+=`</div>
+      <div class="emp-actions">
+        <button onclick="removeEmployee('${emp.id}')">🗑 Удалить сотрудника</button>
+      </div>
+    </div>`;
+  });
+  wrap.innerHTML=html;
+}
+
+function setType(empId,ds,type){
+  const cur=getEmpPlanDay(empId,ds);
+  cur.type=type;
+  setEmpPlanDay(empId,ds,cur);
+  renderEmployeesWeekTable();
+  recalculate();
+}
+
+function updatePlan(empId,ds,field,value){
+  const cur=getEmpPlanDay(empId,ds);
+  cur[field]=value;
+  if(field==='shift'){cur.inTime='';cur.outTime=''}
+  setEmpPlanDay(empId,ds,cur);
+  renderEmployeesWeekTable();
+  recalculate();
 }
 
 function addEmployee(){
   const last=document.getElementById('newLastName').value.trim();
   const first=document.getElementById('newFirstName').value.trim();
   const middle=document.getElementById('newMiddleName').value.trim();
-  if(!last){return showToast('Укажите фамилию',true)}
+  if(!last)return showToast('Укажите фамилию',true);
   const emps=loadEmployees();
   const id='e'+Date.now();
   emps.push({id,last,first,middle});
@@ -904,8 +1064,7 @@ function addEmployee(){
   document.getElementById('newLastName').value='';
   document.getElementById('newFirstName').value='';
   document.getElementById('newMiddleName').value='';
-  renderEmployeesList();
-  renderEmployeeSelect();
+  renderEmployeesWeekTable();
   showToast('✅ Сотрудник добавлен');
 }
 
@@ -916,102 +1075,97 @@ function removeEmployee(id){
   if(!confirm(`Удалить сотрудника "${empFIO(emp)}" и все его планы?`))return;
   saveEmployees(emps.filter(e=>e.id!==id));
   const plan=loadEmpPlan();delete plan[id];save(KEYS.empPlan,plan);
-  renderEmployeesList();
-  renderEmployeeSelect();
-  renderEmployeeWeek();
+  renderEmployeesWeekTable();
   recalculate();
   showToast('Сотрудник удалён');
 }
 
-function renderEmployeeSelect(){
-  const emps=loadEmployees();
-  const sel=document.getElementById('employeeSelect');
-  const cur=sel.value;
-  sel.innerHTML=emps.map(e=>`<option value="${e.id}">${empFIO(e)}</option>`).join('');
-  if(cur&&emps.find(e=>e.id===cur))sel.value=cur;
+/* ===================== МОДАЛЬНОЕ ОКНО ОБУЧЕНИЯ ===================== */
+let trainingCtx={empId:null,ds:null,start:'',end:''};
+
+function openTrainingModal(empId,ds){
+  const plan=getEmpPlanDay(empId,ds);
+  trainingCtx.empId=empId;
+  trainingCtx.ds=ds;
+  trainingCtx.start=plan.trainStart||'';
+  trainingCtx.end=plan.trainEnd||'';
+
+  const emp=loadEmployees().find(e=>e.id===empId);
+  document.getElementById('trainingModalSub').textContent=
+    `${emp?empFIO(emp):''} · ${new Date(ds+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}`;
+
+  renderTimeScroll('startTimeScroll','start');
+  renderTimeScroll('endTimeScroll','end');
+
+  document.getElementById('trainingModal').classList.add('show');
 }
 
-function renderEmployeeWeek(){
-  const sel=document.getElementById('employeeSelect');
-  const empId=sel.value;
-  const emps=loadEmployees();
-  const emp=emps.find(e=>e.id===empId);
-  if(!emp){document.getElementById('empWeek').innerHTML='<p style="color:var(--muted);">Нет сотрудников</p>';return}
+function renderTimeScroll(containerId,which){
+  const el=document.getElementById(containerId);
+  const selected=which==='start'?trainingCtx.start:trainingCtx.end;
+  const other=which==='start'?trainingCtx.end:trainingCtx.start;
 
-  const today=new Date();
-  const dow=today.getDay();
-  const start=new Date(today);
-  start.setDate(today.getDate()+((dow===0)?-6:1-dow));
-  const todayStr=toDateStr(today);
-  const saleOff=isSaleDisabled();
-  const sale=loadSale();
-  let html='';
-  let stats={work:0,sick:0,off:0};
+  el.innerHTML=TIME_OPTIONS.map(t=>{
+    let disabled='';
+    if(which==='start'&&other&&t>=other)disabled=' taken';
+    if(which==='end'&&other&&t<=other)disabled=' taken';
+    const isSel=t===selected?' selected':'';
+    return `<div class="time-option${isSel}${disabled}" onclick="selectTime('${which}','${t}')">${t}</div>`;
+  }).join('');
 
-  for(let i=0;i<7;i++){
-    const cur=new Date(start);cur.setDate(start.getDate()+i);
-    const ds=toDateStr(cur);
-    const plan=getEmpPlanDay(empId,ds);
-    const isToday=ds===todayStr;
-    const inSale=!saleOff&&sale.start&&sale.end&&ds>=sale.start&&ds<=sale.end;
-    const sup=getSupplyForDate(ds);
-    const autoSup=isAutoSupply(cur);
-
-    if(plan.type==='work')stats.work++;else if(plan.type==='sick')stats.sick++;else stats.off++;
-
-    const dayCls=['emp-day',plan.type];if(isToday)dayCls.push('today');
-
-    let label='Работа',labelCls='work';
-    if(plan.type==='sick'){label='🏥 Больничный';labelCls='sick'}
-    else if(plan.type==='off'){label='🏖️ Выходной';labelCls='off'}
-
-    html+=`<div class="${dayCls.join(' ')}">
-      <div class="ed-head">
-        <div><div class="ed-date">${cur.getDate()}.${String(cur.getMonth()+1).padStart(2,'0')}</div><div class="ed-dow">${DOW_NAMES[cur.getDay()]}</div></div>
-        ${isToday?'<span style="font-size:9px;background:var(--pink);color:white;padding:2px 6px;border-radius:8px;">сегодня</span>':''}
-      </div>
-      ${inSale?'<span class="day-tag tag-sale" style="margin-bottom:6px;display:inline-block;">🏷️ Распродажа</span>':''}
-      ${(sup||autoSup)?`<span class="day-tag tag-supply" style="margin-bottom:6px;display:inline-block;margin-left:4px;">📦 ${sup?sup.time:'авто'}</span>`:''}
-      <div class="ed-label ${labelCls}">${label}</div>
-
-      ${plan.type==='work'?`
-        <div class="ed-shift-choose">
-          <label>Смена</label>
-          <select onchange="updateEmpPlan('${empId}','${ds}','shift',this.value)">
-            <option value="both" ${plan.shift==='both'?'selected':''}>Обе смены</option>
-            <option value="s1" ${plan.shift==='s1'?'selected':''}>1-я (10:00–17:30)</option>
-            <option value="s2" ${plan.shift==='s2'?'selected':''}>2-я (14:00–22:00)</option>
-          </select>
-        </div>
-        <div class="ed-time-row">
-          <div><label>Приход</label><input type="time" value="${plan.inTime||(plan.shift==='s2'?'14:00':plan.shift==='s1'?'10:00':'10:00')}" onchange="updateEmpPlan('${empId}','${ds}','inTime',this.value)"></div>
-          <div><label>Уход</label><input type="time" value="${plan.outTime||(plan.shift==='s2'?'22:00':plan.shift==='s1'?'17:30':'17:30')}" onchange="updateEmpPlan('${empId}','${ds}','outTime',this.value)"></div>
-        </div>
-      `:''}
-
-      <div class="ed-buttons">
-        <button class="${plan.type==='work'?'active':''}" onclick="updateEmpPlan('${empId}','${ds}','type','work')">✅ Работа</button>
-        <button class="sick ${plan.type==='sick'?'active':''}" onclick="updateEmpPlan('${empId}','${ds}','type','sick')">🏥 Больничный</button>
-        <button class="off ${plan.type==='off'?'active':''}" onclick="updateEmpPlan('${empId}','${ds}','type','off')">🏖️ Выходной</button>
-      </div>
-    </div>`;
+  // Прокрутка к выбранному
+  if(selected){
+    setTimeout(()=>{
+      const selEl=el.querySelector('.selected');
+      if(selEl)selEl.scrollIntoView({block:'center'});
+    },50);
   }
-  document.getElementById('empWeek').innerHTML=html;
-
-  document.getElementById('empSummary').innerHTML=`
-    <div class="stat"><span style="color:var(--muted);font-size:12px;">Работа</span><b style="color:var(--green)">${stats.work} дн.</b></div>
-    <div class="stat"><span style="color:var(--muted);font-size:12px;">Больничный</span><b style="color:var(--red)">${stats.sick} дн.</b></div>
-    <div class="stat"><span style="color:var(--muted);font-size:12px;">Выходные</span><b style="color:var(--muted)">${stats.off} дн.</b></div>
-    <div class="stat" style="margin-left:auto;"><span style="color:var(--muted);font-size:12px;">Сотрудник</span><b>${empFIO(emp)}</b></div>`;
 }
 
-function updateEmpPlan(empId,ds,field,value){
-  const cur=getEmpPlanDay(empId,ds);
-  cur[field]=value;
-  if(field==='shift'){cur.inTime='';cur.outTime=''}
-  setEmpPlanDay(empId,ds,cur);
-  renderEmployeeWeek();
+function selectTime(which,t){
+  if(which==='start'){
+    if(trainingCtx.end && t>=trainingCtx.end)return;
+    trainingCtx.start=t;
+  } else {
+    if(trainingCtx.start && t<=trainingCtx.start)return;
+    trainingCtx.end=t;
+  }
+  renderTimeScroll('startTimeScroll','start');
+  renderTimeScroll('endTimeScroll','end');
+}
+
+function saveTraining(){
+  if(!trainingCtx.start||!trainingCtx.end){
+    return showToast('Выберите время начала и окончания',true);
+  }
+  if(trainingCtx.start>=trainingCtx.end){
+    return showToast('Конец должен быть позже начала',true);
+  }
+  const cur=getEmpPlanDay(trainingCtx.empId,trainingCtx.ds);
+  cur.trainStart=trainingCtx.start;
+  cur.trainEnd=trainingCtx.end;
+  cur.type='work';
+  setEmpPlanDay(trainingCtx.empId,trainingCtx.ds,cur);
+  closeTrainingModal();
+  renderEmployeesWeekTable();
   recalculate();
+  showToast('🎓 Обучение добавлено');
+}
+
+function clearTraining(){
+  const cur=getEmpPlanDay(trainingCtx.empId,trainingCtx.ds);
+  cur.trainStart='';
+  cur.trainEnd='';
+  setEmpPlanDay(trainingCtx.empId,trainingCtx.ds,cur);
+  closeTrainingModal();
+  renderEmployeesWeekTable();
+  recalculate();
+  showToast('Обучение убрано');
+}
+
+function closeTrainingModal(){
+  document.getElementById('trainingModal').classList.remove('show');
+  trainingCtx={empId:null,ds:null,start:'',end:''};
 }
 
 /* ===================== ВЫРУЧКА ===================== */
@@ -1076,17 +1230,17 @@ function renderRevenue(){
 
 /* ===================== ЭКСПОРТ ===================== */
 function exportCSV(){
-  const rows=[['Тип','Дата','Значение1','Значение2','Значение3','Значение4']];
+  const rows=[['Тип','Дата','Значение1','Значение2','Значение3','Значение4','Значение5']];
   const rev=loadRevenue();
-  Object.entries(rev).sort().forEach(([d,v])=>rows.push(['Выручка',d,v.amount,v.checks||'','','']));
+  Object.entries(rev).sort().forEach(([d,v])=>rows.push(['Выручка',d,v.amount,v.checks||'','','','']));
   const emps=loadEmployees();
   const plan=loadEmpPlan();
   emps.forEach(emp=>{
     Object.entries(plan[emp.id]||{}).forEach(([ds,p])=>{
-      rows.push(['План',ds,empFIO(emp),p.type,p.shift||'',(p.inTime||'')+'-'+(p.outTime||'')]);
+      rows.push(['План',ds,empFIO(emp),p.type,p.shift||'',(p.inTime||'')+'-'+(p.outTime||''),(p.trainStart||'')+'-'+(p.trainEnd||'')]);
     });
   });
-  loadSupplies().forEach(s=>rows.push(['Поставка',s.date,s.time,'','','']));
+  loadSupplies().forEach(s=>rows.push(['Поставка',s.date,s.time,'','','','']));
   const csv='\uFEFF'+rows.map(r=>r.map(c=>`"${c}"`).join(';')).join('\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
@@ -1169,8 +1323,7 @@ function selectDate(ds){document.getElementById('dateInput').value=ds;recalculat
   updateSaleStatus();
 
   renderSupplyList();
-  renderEmployeesList();
-  renderEmployeeSelect();
+  renderEmployeesWeekTable();
   await recalculate();
 })();
 </script>
