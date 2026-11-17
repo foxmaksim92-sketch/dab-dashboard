@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DAB">
+<title>DAB · Новокузнецк · Дашборд</title>
+<style>
+  :root {
+    --bg: #0f172a; --panel: #1e293b; --panel2: #273449;
+    --text: #e2e8f0; --muted: #94a3b8;
+    --green: #22c55e; --yellow: #eab308; --red: #ef4444;
+    --blue: #3b82f6; --accent: #8b5cf6; --border: #334155;
+    --pink: #ec4899; --orange: #f97316; --cyan: #06b6d4;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text);
+    padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
+    font-size: 14px; line-height: 1.4;
+  }
+  @media (max-width: 640px) { body { padding: calc(12px + var(--safe-top)) 12px calc(12px + var(--safe-bottom)); } }
+
+  .header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .header h1 { font-size: 24px; }
+  .header h1 .dab { background: linear-gradient(90deg, var(--pink), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 900; }
+  .subtitle { color: var(--muted); font-size: 13px; }
+  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .btn { background: var(--accent); color: white; border: none; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; }
+  .btn:active { transform: scale(.97); }
+  .btn.secondary { background: var(--panel2); color: var(--text); }
+  .btn.pink { background: var(--pink); }
+  .btn.green { background: var(--green); }
+  .btn.orange { background: var(--orange); }
+  .btn.red { background: var(--red); }
+  .btn.cyan { background: var(--cyan); color: #0f172a; }
+  .btn.small { padding: 5px 10px; font-size: 11px; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .kpi { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; position: relative; overflow: hidden; }
+  .kpi::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--blue); }
+  .kpi.green::before { background: var(--green); }
+  .kpi.yellow::before { background: var(--yellow); }
+  .kpi.red::before { background: var(--red); }
+  .kpi.cyan::before { background: var(--cyan); }
+  .kpi .label { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+  .kpi .value { font-size: 24px; font-weight: 700; }
+  .kpi .unit { font-size: 12px; color: var(--muted); font-weight: 400; }
+  .kpi .delta { font-size: 12px; margin-top: 4px; color: var(--muted); }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 1000px) { .grid { grid-template-columns: 1fr; } }
+
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+  .card h2 { font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card h2 .badge { font-size: 11px; background: var(--panel2); color: var(--muted); padding: 2px 8px; border-radius: 20px; font-weight: 400; }
+
+  .factor-list { display: flex; flex-direction: column; gap: 8px; }
+  .factor { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: var(--panel2); border-radius: 8px; font-size: 13px; }
+  .factor .left { display: flex; align-items: center; gap: 10px; }
+  .factor .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.green { background: var(--green); } .dot.yellow { background: var(--yellow); } .dot.red { background: var(--red); }
+  .factor .coef { font-weight: 700; font-family: monospace; }
+  .coef.green { color: var(--green); } .coef.yellow { color: var(--yellow); } .coef.red { color: var(--red); }
+
+  .factor-total { margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #1e3a8a, #4c1d95); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .factor-total .big { font-size: 22px; font-weight: 700; }
+
+  .chart-bar { display: flex; align-items: flex-end; gap: 4px; height: 140px; padding-top: 10px; }
+  .bar { flex: 1; background: var(--panel2); border-radius: 4px 4px 0 0; position: relative; min-height: 4px; }
+  .bar-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 9px; color: var(--muted); }
+  .chart-wrap { margin-bottom: 26px; }
+
+  .heatmap-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px; background: var(--panel2); border-radius: 8px; font-size: 12px; }
+  .heatmap-legend .lg-item { display: flex; align-items: center; gap: 6px; }
+  .heatmap-legend .swatch { width: 22px; height: 22px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #0f172a; }
+
+  .heatmap-table { width: 100%; border-collapse: separate; border-spacing: 4px; }
+  .heatmap-table th { font-size: 11px; color: var(--muted); padding: 6px 2px; text-align: center; }
+  .heatmap-table th.day-col { text-align: left; padding-left: 8px; min-width: 140px; }
+  .heatmap-table td { padding: 0; text-align: center; }
+  .hm-cell { height: 42px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; cursor: pointer; color: #0f172a; }
+  .hm-cell .hm-sub { font-size: 9px; opacity: 0.8; }
+  .hm-day-row td:first-child { text-align: left; padding: 6px 8px; background: var(--panel2); border-radius: 6px; font-size: 12px; }
+  .day-tags { display: flex; gap: 3px; margin-top: 4px; flex-wrap: wrap; }
+  .day-tag { font-size: 9px; padding: 1px 5px; border-radius: 8px; font-weight: 600; }
+  .tag-holiday { background: rgba(239,68,68,.2); color: var(--red); }
+  .tag-supply { background: rgba(249,115,22,.2); color: var(--orange); }
+  .tag-sale { background: rgba(236,72,153,.2); color: var(--pink); }
+  .tag-sick { background: rgba(239,68,68,.25); color: var(--red); }
+  .tag-off { background: rgba(148,163,184,.2); color: var(--muted); }
+
+  .staff-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .staff-table th { text-align: left; padding: 8px 6px; color: var(--muted); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  .staff-table td { padding: 9px 6px; border-bottom: 1px solid var(--border); }
+  .staff-table tr:last-child td { border-bottom: none; }
+  .status { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .status.ok { background: rgba(34,197,94,.15); color: var(--green); }
+  .status.warn { background: rgba(234,179,8,.15); color: var(--yellow); }
+  .status.bad { background: rgba(239,68,68,.15); color: var(--red); }
+  .summary-row { margin-top: 12px; padding: 12px; background: var(--panel2); border-radius: 8px; display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; }
+
+  .revenue-panel { background: linear-gradient(135deg, #1e293b, #2d1b4e); border: 1px solid var(--pink); }
+  .rev-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .rev-field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; }
+  .rev-field input { width: 100%; background: var(--panel2); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 15px; font-weight: 600; font-family: inherit; }
+  .rev-period { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .rev-period button { background: var(--panel2); border: 1px solid var(--border); color: var(--text); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: inherit; }
+  .rev-period button.active { background: var(--pink); border-color: var(--pink); color: white; }
+  .rev-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .rev-stat { background: var(--panel2); padding: 12px; border-radius: 8px; border-left: 3px solid var(--pink); }
+  .rev-stat .lbl { font-size: 11px; color: var(--muted); }
+  .rev-stat .val { font-size: 17px; font-weight: 700; margin-top: 2px; }
+  .rev-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .rev-table th { text-align: left; padding: 8px 6px; color: var(--muted); font-size: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  .rev-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); }
+
+  .date-picker { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; padding: 12px; background: var(--panel); border-radius: 10px; border: 1px solid var(--border); }
+  .date-picker input, .date-picker select { background: var(--panel2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-family: inherit; }
+
+  /* Shift calendar */
+  .shift-calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  @media (max-width: 720px) { .shift-calendar { grid-template-columns: repeat(2, 1fr); } }
+  .shift-day { background: var(--panel2); border-radius: 8px; padding: 10px; border: 2px solid transparent; }
+  .shift-day.today { border-color: var(--pink); }
+  .shift-day.holiday { background: rgba(239,68,68,.08); }
+  .shift-day.supply { background: rgba(249,115,22,.08); }
+  .shift-day.sale { background: rgba(236,72,153,.08); }
+  .sd-head { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .sd-date { font-size: 12px; font-weight: 700; }
+  .sd-dow { font-size: 10px; color: var(--muted); }
+  .sd-tags { display: flex; gap: 3px; margin-bottom: 6px; flex-wrap: wrap; }
+  .sd-tag { font-size: 9px; padding: 1px 6px; border-radius: 8px; font-weight: 600; }
+  .shift-row { display: flex; align-items: center; gap: 5px; margin-top: 5px; font-size: 11px; }
+  .s-label { color: var(--muted); min-width: 40px; font-size: 10px; }
+  .s-input { width: 36px; background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 3px 5px; border-radius: 5px; font-size: 12px; font-weight: 700; font-family: monospace; text-align: center; }
+  .s-btn { width: 20px; height: 20px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); color: var(--text); cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+
+  /* Sale period form */
+  .sale-form { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 14px; padding: 12px; background: rgba(236,72,153,.1); border: 1px solid var(--pink); border-radius: 8px; flex-wrap: wrap; }
+  .sale-form .fld { flex: 1; min-width: 120px; }
+  .sale-form label { display: block; font-size: 10px; color: var(--pink); margin-bottom: 4px; text-transform: uppercase; font-weight: 600; }
+  .sale-form input { width: 100%; background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 8px 10px; border-radius: 6px; font-size: 13px; }
+
+  /* Employee panel */
+  .emp-selector { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; padding: 12px; background: var(--panel2); border-radius: 8px; flex-wrap: wrap; }
+  .emp-selector select { flex: 1; min-width: 180px; background: var(--panel); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 14px; font-family: inherit; }
+  .emp-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  @media (max-width: 720px) { .emp-week { grid-template-columns: repeat(2, 1fr); } }
+  .emp-day { background: var(--panel2); border-radius: 8px; padding: 10px; text-align: center; }
+  .emp-day .ed-date { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+  .emp-day .ed-dow { font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+  .emp-day .ed-status { font-size: 11px; padding: 3px 8px; border-radius: 10px; display: inline-block; margin-bottom: 6px; font-weight: 600; }
+  .emp-day .ed-status.work { background: rgba(34,197,94,.15); color: var(--green); }
+  .emp-day .ed-status.sick { background: rgba(239,68,68,.2); color: var(--red); }
+  .emp-day .ed-status.off { background: rgba(148,163,184,.2); color: var(--muted); }
+  .emp-day .ed-actions { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+  .emp-day .ed-actions button { font-size: 10px; padding: 3px 6px; border-radius: 6px; border: 1px solid var(--border); background: var(--panel); color: var(--text); cursor: pointer; }
+  .emp-day .ed-actions button.active { background: var(--green); color: #0f172a; border-color: var(--green); }
+  .emp-day .ed-actions button.sick.active { background: var(--red); color: white; border-color: var(--red); }
+  .emp-day .ed-actions button.off.active { background: var(--muted); color: #0f172a; border-color: var(--muted); }
+
+  .weather-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--panel2); border-radius: 20px; font-size: 12px; }
+  .weather-badge .temp { font-weight: 700; }
+
+  .toast { position: fixed; bottom: calc(24px + var(--safe-bottom)); right: 24px; background: var(--green); color: #0f172a; padding: 12px 20px; border-radius: 10px; font-weight: 600; opacity: 0; transform: translateY(20px); transition: all .3s; pointer-events: none; z-index: 9999; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.error { background: var(--red); color: white; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1><span class="dab">DAB</span> · Дашборд</h1>
+    <p class="subtitle">г. Новокузнецк · 10:00–17:30 / 14:00–22:00</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn secondary" onclick="window.print()">🖨 PDF</button>
+    <button class="btn green" onclick="exportCSV()">📥 CSV</button>
+  </div>
+</div>
+
+<!-- Погода -->
+<div class="date-picker">
+  <label>📅 Дата:</label>
+  <input type="date" id="dateInput">
+  <button class="btn" onclick="recalculate()">Пересчитать</button>
+  <span class="weather-badge" id="weatherBadge">🌤️ Загрузка погоды…</span>
+</div>
+
+<div class="kpi-row" id="kpiRow"></div>
+
+<!-- Распродажа -->
+<div class="card">
+  <h2>🏷️ Период распродажи <span class="badge">влияет на прогноз всех дней</span></h2>
+  <div class="sale-form">
+    <div class="fld"><label>Начало</label><input type="date" id="saleStart"></div>
+    <div class="fld"><label>Конец</label><input type="date" id="saleEnd"></div>
+    <button class="btn pink" onclick="saveSalePeriod()">💾 Сохранить период</button>
+    <button class="btn secondary" onclick="clearSalePeriod()">🗑 Сбросить</button>
+  </div>
+  <p class="hint" id="saleStatus">Период не задан — используется автоматический (15–30 число)</p>
+</div>
+
+<!-- График смен -->
+<div class="card">
+  <h2>📅 График смен <span class="badge">влияет на все расчёты</span></h2>
+  <div class="shift-calendar" id="shiftCalendar"></div>
+</div>
+
+<!-- Сотрудники -->
+<div class="card">
+  <h2>👤 Личный кабинет сотрудника <span class="badge">планирование на неделю</span></h2>
+  <p class="hint" style="margin-bottom:12px;">Выберите ФИО — сотрудник может отметить больничный или желаемый выходной. Отметки сохраняются и учитываются в общем графике.</p>
+  <div class="emp-selector">
+    <label style="font-size:13px;color:var(--muted);">Сотрудник:</label>
+    <select id="employeeSelect" onchange="renderEmployeeWeek()"></select>
+    <button class="btn cyan small" onclick="addEmployee()">+ Добавить ФИО</button>
+  </div>
+  <div class="emp-week" id="empWeek"></div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>🚦 Факторы дня <span class="badge" id="dateBadge"></span></h2>
+    <div class="factor-list" id="factorList"></div>
+    <div class="factor-total"><span>Прогноз посетителей</span><span><span class="big" id="totalVisitors">—</span> чел.</span></div>
+  </div>
+  <div class="card">
+    <h2>📈 Прогноз по часам</h2>
+    <div class="chart-wrap"><div class="chart-bar" id="hourlyChart"></div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🔥 Тепловая карта · неделя</h2>
+  <div class="heatmap-legend">
+    <div class="lg-item"><span class="swatch" style="background:#22c55e">низк</span> Низкая</div>
+    <div class="lg-item"><span class="swatch" style="background:#eab308">сред</span> Средняя</div>
+    <div class="lg-item"><span class="swatch" style="background:#f97316">выс</span> Высокая</div>
+    <div class="lg-item"><span class="swatch" style="background:#ef4444">пик</span> Пик</div>
+    <div class="lg-item"><span class="swatch" style="background:rgba(236,72,153,.3);color:var(--pink)">🏷️</span> Распродажа</div>
+    <div class="lg-item"><span class="swatch" style="background:rgba(239,68,68,.3);color:var(--red)">🎉</span> Праздник</div>
+    <div class="lg-item"><span class="swatch" style="background:rgba(249,115,22,.3);color:var(--orange)">📦</span> Поставка</div>
+  </div>
+  <div style="overflow-x:auto;"><table class="heatmap-table" id="heatmap"></table></div>
+</div>
+
+<div class="card">
+  <h2>👥 Персонал · с учётом графика и отметок</h2>
+  <div style="overflow-x:auto;">
+    <table class="staff-table">
+      <thead><tr><th>Время</th><th>Смена</th><th>Прогноз</th><th>Нужно</th><th>Доступно</th><th>Дефицит</th><th>Статус</th></tr></thead>
+      <tbody id="staffTable"></tbody>
+    </table>
+  </div>
+  <div class="summary-row" id="staffSummary"></div>
+</div>
+
+<div class="card revenue-panel">
+  <h2>💵 Выручка</h2>
+  <div class="rev-inputs">
+    <div class="rev-field"><label>Дата</label><input type="date" id="revDate"></div>
+    <div class="rev-field"><label>Выручка, ₽</label><input type="number" id="revAmount" placeholder="85000"></div>
+    <div class="rev-field"><label>Чеков</label><input type="number" id="revChecks" placeholder="42"></div>
+    <div class="rev-field"><button class="btn pink" onclick="saveRevenue()" style="width:100%;">💾</button></div>
+  </div>
+  <div class="rev-period">
+    <button class="active" data-p="7" onclick="setPeriod(7)">7 дней</button>
+    <button data-p="14" onclick="setPeriod(14)">14</button>
+    <button data-p="30" onclick="setPeriod(30)">30</button>
+    <button data-p="0" onclick="setPeriod(0)">Всё</button>
+  </div>
+  <div class="rev-stats" id="revStats"></div>
+  <table class="rev-table" id="revTable"></table>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== КОНСТАНТЫ ===================== */
+const HOURS = [10,11,12,13,14,15,16,17,18,19,20,21];
+const HOUR_PROFILE = [0.04,0.06,0.10,0.11,0.10,0.09,0.08,0.09,0.10,0.09,0.08,0.06];
+const BASE_TRAFFIC = 220;
+const SERVICE_TIME_MIN = 12, SHIFT_MIN = 60, EFFECT = 0.8;
+const DOW_COEF = [1.4, 0.8, 0.85, 0.9, 0.95, 1.15, 1.45];
+const DOW_NAMES = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const DOW_FULL = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+
+const HOLIDAYS = {
+  '01-01':'Новый год','01-02':'Новогодние каникулы','01-03':'Новогодние каникулы',
+  '01-04':'Новогодние каникулы','01-05':'Новогодние каникулы','01-06':'Новогодние каникулы',
+  '01-07':'Рождество','01-08':'Новогодние каникулы',
+  '02-23':'День защитника Отечества','03-08':'Международный женский день',
+  '05-01':'Праздник Весны и Труда','05-09':'День Победы','06-12':'День России','11-04':'День народного единства'
+};
+const HOLIDAY_COEF = {
+  '01-01':1.8,'01-02':1.6,'01-03':1.5,'01-04':1.5,'01-05':1.4,'01-06':1.4,'01-07':1.7,'01-08':1.4,
+  '02-23':1.5,'03-08':1.7,'05-01':1.6,'05-09':1.6,'06-12':1.4,'11-04':1.4
+};
+
+/* ===================== ХРАНИЛИЩА ===================== */
+const KEYS = {
+  rev: 'dab_rev_v2',
+  shifts: 'dab_shifts_v2',
+  supply: 'dab_supply_v2',
+  sale: 'dab_sale_v2',
+  employees: 'dab_employees_v2',
+  empStatus: 'dab_emp_status_v2',
+  weather: 'dab_weather_cache'
+};
+
+function load(key, def = {}) { try { return JSON.parse(localStorage.getItem(key)) || def; } catch(e) { return def; } }
+function save(key, obj) { localStorage.setItem(key, JSON.stringify(obj)); }
+
+function loadShifts() { return load(KEYS.shifts); }
+function getShiftForDate(ds) { const all = loadShifts(); return all[ds] || {s1:3, s2:3}; }
+function setShiftForDate(ds, s1, s2) { const all = loadShifts(); all[ds] = {s1: Math.max(0,s1), s2: Math.max(0,s2)}; save(KEYS.shifts, all); }
+
+function loadEmployees() { return load(KEYS.employees, ['Иванова А.','Петров С.','Сидорова Е.','Козлов Д.']); }
+function loadEmpStatus() { return load(KEYS.empStatus, {}); }
+function getEmpStatus(name, ds) { return (loadEmpStatus()[name] || {})[ds] || 'work'; }
+function setEmpStatus(name, ds, status) {
+  const all = loadEmpStatus();
+  if (!all[name]) all[name] = {};
+  all[name][ds] = status;
+  save(KEYS.empStatus, all);
+}
+
+function loadSale() { return load(KEYS.sale, {start:'', end:''}); }
+function loadSupply() { return load(KEYS.supply, []); }
+
+/* ===================== ПОГОДА (Open-Meteo) ===================== */
+// Новокузнецк: 53.7557, 87.1099
+const NOVOKUZNETSK = { lat: 53.7557, lon: 87.1099 };
+let weatherCache = load(KEYS.weather, {});
+
+async function fetchWeather() {
+  const today = toDateStr(new Date());
+  // Кэш на 1 час
+  if (weatherCache.date === today && weatherCache.ts && (Date.now() - weatherCache.ts) < 3600000) {
+    return weatherCache.data;
+  }
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${NOVOKUZNETSK.lat}&longitude=${NOVOKUZNETSK.lon}&current=temperature_2m,weather_code,precipitation&timezone=Asia%2FNovokuznetsk`;
+    const res = await fetch(url);
+    const json = await res.json();
+    const data = {
+      temp: json.current?.temperature_2m,
+      code: json.current?.weather_code,
+      precip: json.current?.precipitation
+    };
+    weatherCache = { date: today, ts: Date.now(), data };
+    save(KEYS.weather, weatherCache);
+    return data;
+  } catch(e) {
+    console.warn('Погода недоступна:', e);
+    return null;
+  }
+}
+
+function weatherIcon(code) {
+  if (code === 0) return '☀️';
+  if (code <= 3) return '⛅';
+  if (code <= 48) return '🌫️';
+  if (code <= 67) return '🌧️';
+  if (code <= 77) return '❄️';
+  if (code <= 82) return '🌦️';
+  if (code <= 86) return '🌨️';
+  return '⛈️';
+}
+
+function weatherToCoef(data) {
+  if (!data || data.temp === undefined) return {coef: 1.0, text:'нет данных', cls:'yellow', icon:'🌡️'};
+  const { temp, code, precip } = data;
+  // Дождь/снег → снижение
+  if (code >= 51 && code <= 67 || code >= 80 && code <= 82 || code >= 95) {
+    return {coef: 0.78, text:`${temp.toFixed(0)}°C, осадки`, cls:'red', icon: weatherIcon(code)};
+  }
+  if (code >= 71 && code <= 77 || code >= 85 && code <= 86) {
+    return {coef: 0.70, text:`${temp.toFixed(0)}°C, снег`, cls:'red', icon: weatherIcon(code)};
+  }
+  // Тепло и солнечно → рост
+  if (temp >= 20) return {coef: 1.20, text:`+${temp.toFixed(0)}°C, тепло`, cls:'green', icon: weatherIcon(code)};
+  if (temp >= 15) return {coef: 1.10, text:`${temp.toFixed(0)}°C, комфортно`, cls:'green', icon: weatherIcon(code)};
+  if (temp < 0) return {coef: 0.80, text:`${temp.toFixed(0)}°C, мороз`, cls:'red', icon: weatherIcon(code)};
+  return {coef: 1.0, text:`${temp.toFixed(0)}°C`, cls:'yellow', icon: weatherIcon(code)};
+}
+
+/* ===================== ВСПОМОГАТЕЛЬНЫЕ ===================== */
+function toDateStr(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function getShift(hour) {
+  if (hour < 14) return {name:'1-я', cls:'shift-1'};
+  if (hour < 18) return {name:'Пересеч.', cls:'shift-both'};
+  return {name:'2-я', cls:'shift-2'};
+}
+
+function getSaleCoef(d) {
+  const sale = loadSale();
+  const ds = toDateStr(d);
+  if (sale.start && sale.end) {
+    if (ds >= sale.start && ds <= sale.end) {
+      if (ds === sale.start) return {text:'СТАРТ распродажи', coef:1.8, cls:'red'};
+      if (ds === sale.end) return {text:'КОНЕЦ распродажи', coef:1.5, cls:'red'};
+      return {text:'Распродажа', coef:1.35, cls:'yellow'};
+    }
+    return {text:'Нет распродажи', coef:1.0, cls:'green'};
+  }
+  // Авто: 15–30 число
+  const day = d.getDate();
+  if (day === 15) return {text:'СТАРТ распродажи', coef:1.8, cls:'red'};
+  if (day === 30) return {text:'КОНЕЦ распродажи', coef:1.5, cls:'red'};
+  if (day > 15 && day < 30) return {text:'Распродажа', coef:1.35, cls:'yellow'};
+  return {text:'Нет распродажи', coef:1.0, cls:'green'};
+}
+
+function isAutoSupply(d) { const doy = Math.floor((d - new Date(d.getFullYear(),0,0)) / 86400000); return doy % 14 === 0; }
+function isCustomSupply(ds) { return loadSupply().includes(ds); }
+function isSupplyDay(d, ds) { return isAutoSupply(d) || isCustomSupply(ds); }
+function isSalaryDay(d) { const day = d.getDate(); return (day>=5&&day<=10)||(day>=20&&day<=25); }
+
+function availableStaffForDay(ds, hour) {
+  // Базовое число из графика смен
+  const shift = getShiftForDate(ds);
+  let base = 0;
+  if (hour >= 10 && hour <= 17) base += shift.s1;
+  if (hour >= 14 && hour <= 21) base += shift.s2;
+
+  // Вычитаем сотрудников на больничном или выходном
+  const emps = loadEmployees();
+  let unavailable = 0;
+  emps.forEach(name => {
+    const st = getEmpStatus(name, ds);
+    if (st === 'sick' || st === 'off') unavailable++;
+  });
+  return Math.max(0, base - Math.floor(unavailable / 2)); // грубая корректировка
+}
+
+/* ===================== РАСЧЁТ ДНЯ ===================== */
+async function calculateDay(d) {
+  const dow = d.getDay();
+  const mmdd = String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const ds = toDateStr(d);
+  const factors = [];
+
+  factors.push({icon:'📆', text:DOW_FULL[dow], coef:DOW_COEF[dow], cls: DOW_COEF[dow]>1.2?'green':'yellow'});
+
+  const hol = HOLIDAYS[mmdd];
+  if (hol) factors.push({icon:'🎉', text:`Праздник: ${hol}`, coef:HOLIDAY_COEF[mmdd]||1.5, cls:'red'});
+
+  factors.push({icon:'💰', text: isSalaryDay(d)?'Зарплатный период':'Обычный период', coef: isSalaryDay(d)?1.3:1.0, cls: isSalaryDay(d)?'green':'yellow'});
+
+  // Погода
+  const weatherData = await fetchWeather();
+  const w = weatherToCoef(weatherData);
+  factors.push({icon:w.icon, text:`Погода: ${w.text}`, coef:w.coef, cls:w.cls});
+
+  factors.push({icon:'📦', text: isSupplyDay(d,ds)?'Поставка':'Без поставки', coef: isSupplyDay(d,ds)?1.15:1.0, cls: isSupplyDay(d,ds)?'green':'yellow'});
+
+  const s = getSaleCoef(d);
+  factors.push({icon:'🏷️', text:s.text, coef:s.coef, cls:s.cls});
+
+  const totalCoef = factors.reduce((a,f)=>a*f.coef, 1);
+  const visitors = Math.round(BASE_TRAFFIC * totalCoef);
+  const hourly = HOUR_PROFILE.map(p => Math.max(1, Math.round(visitors * p)));
+
+  return { factors, totalCoef, visitors, hourly, dateStr: ds, weatherData };
+}
+
+/* ===================== РЕНДЕР ===================== */
+function renderWeatherBadge(data) {
+  const el = document.getElementById('weatherBadge');
+  if (!data) { el.textContent = '🌡️ Погода недоступна'; return; }
+  const w = weatherToCoef(data);
+  el.innerHTML = `${w.icon} <span class="temp">${data.temp?.toFixed(0) ?? '—'}°C</span> · Новокузнецк`;
+}
+
+function renderKPIs(data) {
+  const peak = Math.max(...data.hourly);
+  const peakHour = HOURS[data.hourly.indexOf(peak)];
+  let maxStaff = 0, totalNeeded = 0, totalAvail = 0;
+  data.hourly.forEach((v, i) => {
+    const s = Math.ceil(v * SERVICE_TIME_MIN / SHIFT_MIN / EFFECT);
+    if (s > maxStaff) maxStaff = s;
+    totalNeeded += s;
+    totalAvail += availableStaffForDay(data.dateStr, HOURS[i]);
+  });
+  const avgAvail = Math.round(totalAvail / HOURS.length);
+
+  const kpis = [
+    {label:'Посетителей', value:data.visitors, unit:'чел.', cls:'', delta:'прогноз'},
+    {label:'Пик', value:peakHour+':00', unit:'', cls:'yellow', delta:peak+' чел.'},
+    {label:'Нужно (макс)', value:maxStaff, unit:'чел.', cls:'red', delta:'в пик'},
+    {label:'Доступно (сред.)', value:avgAvail, unit:'чел.', cls:'green', delta:'с учётом отметок'},
+  ];
+  document.getElementById('kpiRow').innerHTML = kpis.map(k => `
+    <div class="kpi ${k.cls}"><div class="label">${k.label}</div>
+    <div class="value">${k.value} <span class="unit">${k.unit}</span></div>
+    <div class="delta">${k.delta}</div></div>`).join('');
+}
+
+function renderFactors(data) {
+  document.getElementById('dateBadge').textContent = data.dateStr;
+  document.getElementById('factorList').innerHTML = data.factors.map(f => `
+    <div class="factor"><div class="left"><span class="dot ${f.cls}"></span><span>${f.icon} ${f.text}</span></div>
+    <span class="coef ${f.cls}">×${f.coef.toFixed(2)}</span></div>`).join('');
+  document.getElementById('totalVisitors').textContent = data.visitors;
+}
+
+function renderHourlyChart(data) {
+  const max = Math.max(...data.hourly);
+  document.getElementById('hourlyChart').innerHTML = data.hourly.map((v,i)=>{
+    const h = (v/max)*100;
+    let c = '#3b82f6'; if (v/max>0.7) c='#ef4444'; else if (v/max>0.4) c='#eab308';
+    return `<div class="bar" style="height:${h}%;background:${c}" title="${HOURS[i]}:00 — ${v} чел."><span class="bar-label">${HOURS[i]}</span></div>`;
+  }).join('');
+}
+
+function renderShiftCalendar(centerDate) {
+  const start = new Date(centerDate);
+  const dow = start.getDay();
+  start.setDate(start.getDate() + ((dow===0)?-6:1-dow));
+  const todayStr = toDateStr(new Date());
+  const shifts = loadShifts();
+  const supplies = loadSupply();
+  const sale = loadSale();
+  let html = '';
+
+  for (let i=0;i<7;i++) {
+    const cur = new Date(start); cur.setDate(start.getDate()+i);
+    const ds = toDateStr(cur);
+    const mmdd = String(cur.getMonth()+1).padStart(2,'0')+'-'+String(cur.getDate()).padStart(2,'0');
+    const hol = HOLIDAYS[mmdd];
+    const sup = isAutoSupply(cur) || supplies.includes(ds);
+    const inSale = sale.start && sale.end && ds >= sale.start && ds <= sale.end;
+    const shift = shifts[ds] || {s1:3, s2:3};
+
+    const cls = ['shift-day'];
+    if (ds === todayStr) cls.push('today');
+    if (hol) cls.push('holiday');
+    if (sup) cls.push('supply');
+    if (inSale) cls.push('sale');
+
+    html += `<div class="${cls.join(' ')}">
+      <div class="sd-head"><span class="sd-date">${cur.getDate()}.${String(cur.getMonth()+1).padStart(2,'0')}</span><span class="sd-dow">${DOW_NAMES[cur.getDay()]}</span></div>
+      <div class="sd-tags">
+        ${hol?`<span class="sd-tag tag-holiday">🎉</span>`:''}
+        ${sup?`<span class="sd-tag tag-supply">📦</span>`:''}
+        ${inSale?`<span class="sd-tag tag-sale">🏷️</span>`:''}
+      </div>
+      <div class="shift-row"><span class="s-label">10:00</span>
+        <button class="s-btn" onclick="changeShift('${ds}',-1,0)">−</button>
+        <input class="s-input" type="number" min="0" max="20" value="${shift.s1}" onchange="changeShift('${ds}','set',0,this.value)">
+        <button class="s-btn" onclick="changeShift('${ds}',1,0)">+</button>
+      </div>
+      <div class="shift-row"><span class="s-label">14:00</span>
+        <button class="s-btn" onclick="changeShift('${ds}',0,-1)">−</button>
+        <input class="s-input" type="number" min="0" max="20" value="${shift.s2}" onchange="changeShift('${ds}','set',1,this.value)">
+        <button class="s-btn" onclick="changeShift('${ds}',0,1)">+</button>
+      </div>
+    </div>`;
+  }
+  document.getElementById('shiftCalendar').innerHTML = html;
+}
+
+function changeShift(ds, type, idx, val) {
+  const cur = getShiftForDate(ds);
+  if (type === 'set') { if (idx===0) cur.s1 = Math.max(0, parseInt(val)||0); else cur.s2 = Math.max(0, parseInt(val)||0); }
+  else { if (idx===0) cur.s1 = Math.max(0, cur.s1+type); else cur.s2 = Math.max(0, cur.s2+type); }
+  setShiftForDate(ds, cur.s1, cur.s2);
+  recalculate();
+}
+
+function renderEmployeeWeek() {
+  const sel = document.getElementById('employeeSelect');
+  const name = sel.value;
+  if (!name) return;
+  const today = new Date();
+  const dow = today.getDay();
+  const start = new Date(today);
+  start.setDate(today.getDate() + ((dow===0)?-6:1-dow));
+
+  let html = '';
+  for (let i=0;i<7;i++) {
+    const cur = new Date(start); cur.setDate(start.getDate()+i);
+    const ds = toDateStr(cur);
+    const st = getEmpStatus(name, ds);
+    const label = st === 'sick' ? '🏥 Больничный' : st === 'off' ? '🏖️ Выходной' : '✅ Работа';
+    const cls = st === 'sick' ? 'sick' : st === 'off' ? 'off' : 'work';
+
+    html += `<div class="emp-day">
+      <div class="ed-date">${cur.getDate()}.${String(cur.getMonth()+1).padStart(2,'0')}</div>
+      <div class="ed-dow">${DOW_NAMES[cur.getDay()]}</div>
+      <div class="ed-status ${cls}">${label}</div>
+      <div class="ed-actions">
+        <button class="${st==='work'?'active':''}" onclick="setEmpStatusAndRender('${name}','${ds}','work')">Работа</button>
+        <button class="sick ${st==='sick'?'active':''}" onclick="setEmpStatusAndRender('${name}','${ds}','sick')">🏥</button>
+        <button class="off ${st==='off'?'active':''}" onclick="setEmpStatusAndRender('${name}','${ds}','off')">🏖️</button>
+      </div>
+    </div>`;
+  }
+  document.getElementById('empWeek').innerHTML = html;
+}
+
+function setEmpStatusAndRender(name, ds, status) {
+  setEmpStatus(name, ds, status);
+  renderEmployeeWeek();
+  recalculate();
+}
+
+function addEmployee() {
+  const name = prompt('Введите ФИО сотрудника:');
+  if (!name || !name.trim()) return;
+  const emps = loadEmployees();
+  if (emps.includes(name.trim())) { showToast('Уже есть', true); return; }
+  emps.push(name.trim());
+  save(KEYS.employees, emps);
+  renderEmployeeSelect();
+  showToast('✅ Сотрудник добавлен');
+}
+
+function renderEmployeeSelect() {
+  const emps = loadEmployees();
+  const sel = document.getElementById('employeeSelect');
+  const cur = sel.value;
+  sel.innerHTML = emps.map(e => `<option value="${e}">${e}</option>`).join('');
+  if (cur && emps.includes(cur)) sel.value = cur;
+}
+
+function renderHeatmap(date) {
+  const start = new Date(date);
+  const dow = start.getDay();
+  start.setDate(start.getDate() + ((dow===0)?-6:1-dow));
+  const week = [];
+  for (let i=0;i<7;i++) { const cur = new Date(start); cur.setDate(start.getDate()+i); week.push({date:cur, data: calculateDaySync(cur)}); }
+  const weekMax = Math.max(...week.flatMap(w=>w.data.hourly));
+  const todayStr = toDateStr(new Date());
+  const sale = loadSale();
+
+  let html = '<thead><tr><th class="day-col">День</th>';
+  HOURS.forEach(h=>html+=`<th>${h}</th>`);
+  html += '<th>Итого</th></tr></thead><tbody>';
+
+  week.forEach(({date:cur, data}) => {
+    const ds = toDateStr(cur);
+    const mmdd = String(cur.getMonth()+1).padStart(2,'0')+'-'+String(cur.getDate()).padStart(2,'0');
+    const hol = HOLIDAYS[mmdd];
+    const sup = isAutoSupply(cur) || loadSupply().includes(ds);
+    const inSale = sale.start && sale.end && ds >= sale.start && ds <= sale.end;
+    const dayTotal = data.hourly.reduce((a,b)=>a+b,0);
+    const dayMax = Math.max(...data.hourly);
+
+    html += `<tr class="hm-day-row"><td><b>${DOW_NAMES[cur.getDay()]}</b> ${cur.getDate()}.${cur.getMonth()+1}
+      ${ds===todayStr?'<span style="font-size:9px;background:var(--pink);color:white;padding:1px 5px;border-radius:8px;margin-left:4px;">сегодня</span>':''}
+      <div class="day-tags">
+        ${hol?`<span class="day-tag tag-holiday">🎉 ${hol}</span>`:''}
+        ${sup?`<span class="day-tag tag-supply">📦</span>`:''}
+        ${inSale?`<span class="day-tag tag-sale">🏷️ Распродажа</span>`:''}
+      </div></td>`;
+
+    data.hourly.forEach((v,i)=>{
+      const ratio = v/dayMax;
+      let bg, sub;
+      if (v/weekMax > 0.95) { bg='#7f1d1d'; sub='🔥'; }
+      else if (ratio>0.8) { bg='#ef4444'; sub=Math.round(ratio*100)+'%'; }
+      else if (ratio>0.6) { bg='#f97316'; sub=Math.round(ratio*100)+'%'; }
+      else if (ratio>0.3) { bg='#eab308'; sub=Math.round(ratio*100)+'%'; }
+      else { bg='#22c55e'; sub=Math.round(ratio*100)+'%'; }
+      const color = bg==='#7f1d1d'?'#fff':'#0f172a';
+      html += `<td><div class="hm-cell" style="background:${bg};color:${color}" onclick="selectDate('${ds}')">${v}<span class="hm-sub">${sub}</span></div></td>`;
+    });
+    html += `<td><div style="font-weight:700;color:var(--accent);">${dayTotal}</div><div style="font-size:10px;color:var(--muted);">чел.</div></td></tr>`;
+  });
+  document.getElementById('heatmap').innerHTML = html + '</tbody>';
+}
+
+// Синхронная версия для тепловой карты (без погоды API — использует кэш)
+function calculateDaySync(d) {
+  const dow = d.getDay();
+  const mmdd = String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const ds = toDateStr(d);
+  let coef = DOW_COEF[dow];
+  if (HOLIDAYS[mmdd]) coef *= (HOLIDAY_COEF[mmdd]||1.5);
+  coef *= isSalaryDay(d)?1.3:1.0;
+  // Погода из кэша
+  const wData = weatherCache.data;
+  if (wData) { const w = weatherToCoef(wData); coef *= w.coef; }
+  coef *= isSupplyDay(d,ds)?1.15:1.0;
+  const s = getSaleCoef(d);
+  coef *= s.coef;
+  const visitors = Math.round(BASE_TRAFFIC * coef);
+  const hourly = HOUR_PROFILE.map(p=>Math.max(1,Math.round(visitors*p)));
+  return { visitors, hourly };
+}
+
+function renderStaffTable(data) {
+  let totalNeeded=0, totalAvail=0, deficit=0, hoursDef=0, rows='';
+  data.hourly.forEach((v,i)=>{
+    const hour = HOURS[i];
+    const need = Math.ceil(v*SERVICE_TIME_MIN/SHIFT_MIN/EFFECT);
+    const avail = availableStaffForDay(data.dateStr, hour);
+    const diff = need - avail;
+    totalNeeded += need; totalAvail += avail;
+    let status, sc;
+    if (diff<=0) { status='✅ OK'; sc='ok'; }
+    else if (diff===1) { status='⚠️ +1'; sc='warn'; deficit+=1; hoursDef++; }
+    else { status=`🔴 +${diff}`; sc='bad'; deficit+=diff; hoursDef++; }
+    const shift = getShift(hour);
+    rows += `<tr><td>${hour}:00–${hour+1}:00</td><td>${shift.name}</td><td>${v}</td><td>${need}</td><td>${avail}</td><td>${diff>0?'+'+diff:'—'}</td><td><span class="status ${sc}">${status}</span></td></tr>`;
+  });
+  document.getElementById('staffTable').innerHTML = rows;
+
+  const extra = deficit>0?Math.ceil(deficit/4):0;
+  const shift = getShiftForDate(data.dateStr);
+  // Подсчёт отметок
+  const emps = loadEmployees();
+  let sickCount=0, offCount=0;
+  emps.forEach(n=>{ const st=getEmpStatus(n,data.dateStr); if(st==='sick')sickCount++; if(st==='off')offCount++; });
+
+  document.getElementById('staffSummary').innerHTML = `
+    <div>📊 Нужно: <b>${totalNeeded}</b></div>
+    <div>👥 Доступно: <b>${totalAvail}</b></div>
+    <div>📅 Смены: <b>${shift.s1}+${shift.s2}</b></div>
+    ${sickCount?`<div style="color:var(--red)">🏥 Больничных: <b>${sickCount}</b></div>`:''}
+    ${offCount?`<div style="color:var(--muted)">🏖️ Выходных: <b>${offCount}</b></div>`:''}
+    <div style="color:${deficit>0?'var(--red)':'var(--green)'}">⚠️ Дефицит: <b>${deficit>0?'+'+deficit:'0'}</b></div>
+    <div>💡 <b>${deficit>0?'Вызвать '+extra+' доп.':'Достаточно'}</b></div>`;
+}
+
+/* ===================== ВЫРУЧКА ===================== */
+let revPeriod = 7;
+function loadRevenue() { return load(KEYS.rev, {}); }
+function saveRevenue() {
+  const ds = document.getElementById('revDate').value;
+  const amt = parseFloat(document.getElementById('revAmount').value);
+  const chk = parseInt(document.getElementById('revChecks').value)||0;
+  if (!ds || !amt || amt<=0) return showToast('Заполните дату и сумму', true);
+  const all = loadRevenue(); all[ds] = {amount:amt, checks:chk};
+  save(KEYS.rev, all);
+  document.getElementById('revAmount').value=''; document.getElementById('revChecks').value='';
+  showToast('✅ Сохранено'); renderRevenue();
+}
+function setPeriod(p) {
+  revPeriod = p;
+  document.querySelectorAll('.rev-period button').forEach(b=>b.classList.toggle('active', parseInt(b.dataset.p)===p));
+  renderRevenue();
+}
+function formatRub(n) { return Math.round(n).toLocaleString('ru-RU')+' ₽'; }
+function renderRevenue() {
+  const all = loadRevenue();
+  let entries = Object.entries(all).map(([d,v])=>({date:d,...v})).sort((a,b)=>b.date.localeCompare(a.date));
+  let filtered = entries;
+  if (revPeriod>0) {
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-revPeriod);
+    filtered = entries.filter(e=>e.date >= toDateStr(cutoff));
+  }
+  const statsEl = document.getElementById('revStats');
+  if (filtered.length===0) {
+    statsEl.innerHTML = `<div class="rev-stat" style="grid-column:1/-1;text-align:center;color:var(--muted);">Нет данных</div>`;
+  } else {
+    const total = filtered.reduce((s,e)=>s+e.amount,0);
+    const avg = total/filtered.length;
+    const max = Math.max(...filtered.map(e=>e.amount));
+    const min = Math.min(...filtered.map(e=>e.amount));
+    const totalChk = filtered.reduce((s,e)=>s+(e.checks||0),0);
+    statsEl.innerHTML = `
+      <div class="rev-stat"><div class="lbl">Всего</div><div class="val">${formatRub(total)}</div></div>
+      <div class="rev-stat"><div class="lbl">Средняя/день</div><div class="val">${formatRub(avg)}</div></div>
+      <div class="rev-stat"><div class="lbl">Лучший</div><div class="val" style="color:var(--green)">${formatRub(max)}</div></div>
+      <div class="rev-stat"><div class="lbl">Слабый</div><div class="val" style="color:var(--red)">${formatRub(min)}</div></div>
+      <div class="rev-stat"><div class="lbl">Ср. чек</div><div class="val">${totalChk?formatRub(total/totalChk):'—'}</div></div>`;
+  }
+  const tbl = document.getElementById('revTable');
+  if (entries.length===0) { tbl.innerHTML=''; return; }
+  let html = '<thead><tr><th>Дата</th><th>День</th><th>Выручка</th><th>Чеков</th><th>₽/сотр.</th></tr></thead><tbody>';
+  filtered.forEach(e=>{
+    const d = new Date(e.date+'T00:00:00');
+    let sumAvail = 0;
+    HOURS.forEach(h=> sumAvail += availableStaffForDay(e.date, h));
+    const avgStaff = Math.max(1, Math.round(sumAvail/HOURS.length));
+    html += `<tr><td>${d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})}</td><td>${DOW_NAMES[d.getDay()]}</td><td>${formatRub(e.amount)}</td><td>${e.checks||'—'}</td><td>${formatRub(e.amount/avgStaff)}</td></tr>`;
+  });
+  tbl.innerHTML = html+'</tbody>';
+}
+
+/* ===================== ЭКСПОРТ ===================== */
+function exportCSV() {
+  const rev = loadRevenue();
+  const rows = [['Дата','Выручка','Чеков','Смена1','Смена2','Сотрудник','Статус']];
+  // Выручка
+  Object.entries(rev).sort().forEach(([d,v])=>{
+    const sh = getShiftForDate(d);
+    rows.push([d, v.amount, v.checks||'', sh.s1, sh.s2, '', '']);
+  });
+  // Отметки сотрудников
+  const emps = loadEmployees();
+  const statuses = loadEmpStatus();
+  emps.forEach(name=>{
+    Object.entries(statuses[name]||{}).forEach(([ds,st])=>{
+      if (st!=='work') rows.push([ds,'','','','',name,st]);
+    });
+  });
+  const csv = '\uFEFF'+rows.map(r=>r.map(c=>`"${c}"`).join(';')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `dab-export-${toDateStr(new Date())}.csv`; a.click();
+  showToast('📥 CSV скачан');
+}
+
+/* ===================== TOAST ===================== */
+let toastTimer;
+function showToast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show'+(err?' error':'');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.className='toast', 2500);
+}
+
+/* ===================== РАСПРОДАЖА ===================== */
+function saveSalePeriod() {
+  const s = document.getElementById('saleStart').value;
+  const e = document.getElementById('saleEnd').value;
+  if (!s || !e) return showToast('Укажите обе даты', true);
+  if (s > e) return showToast('Начало позже конца', true);
+  save(KEYS.sale, {start:s, end:e});
+  updateSaleStatus();
+  showToast('🏷️ Период сохранён');
+  recalculate();
+}
+function clearSalePeriod() {
+  save(KEYS.sale, {start:'', end:''});
+  document.getElementById('saleStart').value='';
+  document.getElementById('saleEnd').value='';
+  updateSaleStatus();
+  showToast('Период сброшен');
+  recalculate();
+}
+function updateSaleStatus() {
+  const s = loadSale();
+  const el = document.getElementById('saleStatus');
+  if (s.start && s.end) {
+    el.textContent = `✅ Распродажа: ${s.start} — ${s.end}`;
+    el.style.color = 'var(--pink)';
+  } else {
+    el.textContent = 'Период не задан — используется автоматический (15–30 число)';
+    el.style.color = 'var(--muted)';
+  }
+}
+
+/* ===================== ГЛАВНЫЙ ===================== */
+async function recalculate() {
+  const input = document.getElementById('dateInput');
+  const date = input.value ? new Date(input.value+'T00:00:00') : new Date();
+  const data = await calculateDay(date);
+
+  renderWeatherBadge(data.weatherData);
+  renderKPIs(data);
+  renderFactors(data);
+  renderHourlyChart(data);
+  renderHeatmap(date);
+  renderStaffTable(data);
+  renderRevenue();
+  renderShiftCalendar(date);
+  renderEmployeeWeek();
+}
+
+function selectDate(ds) { document.getElementById('dateInput').value = ds; recalculate(); }
+
+/* ===================== INIT ===================== */
+(async function init() {
+  const today = new Date();
+  const todayStr = toDateStr(today);
+  document.getElementById('dateInput').value = todayStr;
+  document.getElementById('revDate').value = todayStr;
+
+  // Заполняем форму распродажи из сохранённого
+  const sale = loadSale();
+  if (sale.start) document.getElementById('saleStart').value = sale.start;
+  if (sale.end) document.getElementById('saleEnd').value = sale.end;
+  updateSaleStatus();
+
+  renderEmployeeSelect();
+  await recalculate();
+})();
+</script>
+</body>
+</html>
