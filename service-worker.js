@@ -1,6 +1,6 @@
 // Service Worker для DAB Dashboard
 // Версия — меняйте при каждом обновлении, чтобы сбросить кэш
-const CACHE_VERSION = 'dab-v2.0.0';
+const CACHE_VERSION = 'dab-v2.1.0';
 const CACHE_NAME = `${CACHE_VERSION}-static`;
 
 // Файлы для кэширования при установке
