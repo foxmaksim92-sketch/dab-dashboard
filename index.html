@@ -15,17 +15,25 @@
     --green:#22c55e;--yellow:#eab308;--red:#ef4444;
     --blue:#3b82f6;--accent:#8b5cf6;--border:#334155;
     --pink:#ec4899;--orange:#f97316;--cyan:#06b6d4;
-    --purple:#a855f7;
+    --purple:#a855f7;--teal:#14b8a6;
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
+  body.light{
+    --bg:#f1f5f9;--panel:#ffffff;--panel2:#e2e8f0;
+    --text:#0f172a;--muted:#64748b;--border:#cbd5e1;
+    --green:#16a34a;--yellow:#ca8a04;--red:#dc2626;
+    --blue:#2563eb;--accent:#7c3aed;--pink:#db2777;
+    --orange:#ea580c;--cyan:#0891b2;--purple:#9333ea;--teal:#0d9488;
+  }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);
-    padding:calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));font-size:14px;line-height:1.4}
+    padding:calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));font-size:14px;line-height:1.4;
+    transition:background .3s,color .3s}
   @media(max-width:640px){body{padding:calc(12px + var(--safe-top)) 12px calc(12px + var(--safe-bottom))}}
 
   .tabs{display:flex;gap:6px;margin-bottom:20px;background:var(--panel);padding:6px;border-radius:10px;
-    border:1px solid var(--border);overflow-x:auto}
+    border:1px solid var(--border);overflow-x:auto;align-items:center}
   .tab{flex:1;padding:10px 18px;border-radius:8px;background:transparent;border:none;color:var(--muted);
     font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;
     display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s}
@@ -38,10 +46,11 @@
   .header h1 .dab{background:linear-gradient(90deg,var(--pink),var(--accent));-webkit-background-clip:text;
     -webkit-text-fill-color:transparent;background-clip:text;font-weight:900}
   .subtitle{color:var(--muted);font-size:13px}
-  .header-actions{display:flex;gap:8px;flex-wrap:wrap}
+  .header-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
   .btn{background:var(--accent);color:white;border:none;padding:9px 16px;border-radius:8px;cursor:pointer;
-    font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+    font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;font-family:inherit;
+    transition:all .15s}
   .btn:active{transform:scale(.97)}
   .btn.secondary{background:var(--panel2);color:var(--text)}
   .btn.pink{background:var(--pink)} .btn.green{background:var(--green)}
@@ -49,13 +58,17 @@
   .btn.cyan{background:var(--cyan);color:#0f172a}
   .btn.purple{background:var(--purple)}
   .btn.small{padding:5px 10px;font-size:11px}
+  .btn.refresh{background:linear-gradient(135deg,var(--green),var(--cyan));color:white;font-weight:700}
+  .btn.refresh.spinning .icon{display:inline-block;animation:spin 1s linear infinite}
+  @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .btn.theme-btn{padding:9px 12px;font-size:16px}
 
   .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
   .kpi{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;
     position:relative;overflow:hidden}
   .kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--blue)}
   .kpi.green::before{background:var(--green)} .kpi.yellow::before{background:var(--yellow)}
-  .kpi.red::before{background:var(--red)}
+  .kpi.red::before{background:var(--red)} .kpi.pink::before{background:var(--pink)}
   .kpi .label{color:var(--muted);font-size:12px;margin-bottom:6px}
   .kpi .value{font-size:24px;font-weight:700}
   .kpi .unit{font-size:12px;color:var(--muted);font-weight:400}
@@ -78,7 +91,7 @@
   .factor .coef{font-weight:700;font-family:monospace}
   .coef.green{color:var(--green)} .coef.yellow{color:var(--yellow)} .coef.red{color:var(--red)}
   .factor-total{margin-top:12px;padding:12px;background:linear-gradient(135deg,#1e3a8a,#4c1d95);
-    border-radius:8px;display:flex;justify-content:space-between;align-items:center}
+    border-radius:8px;display:flex;justify-content:space-between;align-items:center;color:#fff}
   .factor-total .big{font-size:22px;font-weight:700}
 
   .chart-bar{display:flex;align-items:flex-end;gap:4px;height:140px;padding-top:10px}
@@ -167,7 +180,6 @@
     padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:6px}
   .supply-chip button{background:none;border:none;color:var(--red);cursor:pointer;font-weight:700;font-size:13px}
 
-  /* Список сотрудников */
   .add-emp-form{display:flex;gap:8px;align-items:flex-end;padding:12px;background:var(--panel2);
     border-radius:8px;flex-wrap:wrap;margin-bottom:14px}
   .add-emp-form .fld{flex:1;min-width:140px}
@@ -175,44 +187,49 @@
   .add-emp-form input{width:100%;background:var(--panel);border:1px solid var(--border);color:var(--text);
     padding:8px 10px;border-radius:6px;font-size:13px;font-family:inherit}
 
-  /* Планирование всех сотрудников */
-  .emp-week-table{display:flex;flex-direction:column;gap:8px}
-  .emp-row-week{background:var(--panel2);border-radius:10px;padding:12px;border-left:4px solid var(--accent)}
+  .emp-week-table{display:flex;flex-direction:column;gap:10px}
+  .emp-row-week{background:var(--panel2);border-radius:10px;padding:10px;border-left:4px solid var(--accent)}
   .emp-row-header{display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:10px;flex-wrap:wrap;gap:8px}
+    margin-bottom:8px;flex-wrap:wrap;gap:6px}
   .emp-row-header .fio{font-weight:700;font-size:14px}
-  .emp-row-header .stats{font-size:11px;color:var(--muted);display:flex;gap:12px}
-  .emp-row-header .stats span b{font-size:12px}
-  .emp-days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .emp-row-header .stats{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+  .emp-row-header .stats span b{font-size:13px;color:var(--text)}
+  .emp-days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
   @media(max-width:900px){.emp-days-grid{grid-template-columns:repeat(2,1fr)}}
-  .emp-day-mini{background:var(--panel);border-radius:6px;padding:8px;border:1.5px solid transparent;text-align:center}
+  .emp-day-mini{background:var(--panel);border-radius:8px;padding:6px;border:2px solid transparent;
+    text-align:center;position:relative;display:flex;flex-direction:column;gap:4px}
   .emp-day-mini.work{border-color:var(--green)}
   .emp-day-mini.sick{border-color:var(--red);background:rgba(239,68,68,.08)}
   .emp-day-mini.off{border-color:var(--muted);background:rgba(148,163,184,.08)}
   .emp-day-mini.training{border-color:var(--purple);background:rgba(168,85,247,.08)}
   .emp-day-mini.today{box-shadow:0 0 0 2px var(--pink)}
-  .emp-day-mini .day-name{font-size:10px;color:var(--muted);margin-bottom:2px}
-  .emp-day-mini .day-num{font-size:13px;font-weight:700;margin-bottom:4px}
-  .emp-day-mini .mini-btns{display:flex;gap:2px;justify-content:center;margin-bottom:4px;flex-wrap:wrap}
-  .emp-day-mini .mini-btns button{width:22px;height:22px;border-radius:4px;border:1px solid var(--border);
-    background:var(--panel2);cursor:pointer;font-size:11px;padding:0;color:var(--text)}
+  .emp-day-mini .day-head{display:flex;justify-content:space-between;align-items:center;
+    font-size:11px;color:var(--muted);font-weight:600}
+  .emp-day-mini .day-num{font-size:13px;font-weight:700;color:var(--text)}
+  .emp-day-mini .mini-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+  .emp-day-mini .mini-btns button{
+    height:36px;border-radius:6px;border:1.5px solid var(--border);
+    background:var(--panel2);cursor:pointer;font-size:18px;padding:0;color:var(--text);
+    display:flex;align-items:center;justify-content:center;transition:all .15s;
+  }
   .emp-day-mini .mini-btns button.active{background:var(--accent);color:white;border-color:var(--accent)}
   .emp-day-mini .mini-btns button.sick.active{background:var(--red);border-color:var(--red)}
   .emp-day-mini .mini-btns button.off.active{background:var(--muted);color:#0f172a;border-color:var(--muted)}
   .emp-day-mini .mini-btns button.training.active{background:var(--purple);border-color:var(--purple)}
-  .emp-day-mini .mini-shift{width:100%;background:var(--panel2);border:1px solid var(--border);
-    color:var(--text);padding:2px;border-radius:4px;font-size:9px;font-family:inherit;margin-bottom:3px}
-  .emp-day-mini .mini-time{display:flex;gap:2px}
-  .emp-day-mini .mini-time input{width:100%;background:var(--panel2);border:1px solid var(--border);
-    color:var(--text);padding:2px;border-radius:4px;font-size:9px;font-family:monospace;text-align:center}
-  .emp-day-mini .training-badge{font-size:9px;background:var(--purple);color:white;padding:2px 4px;
-    border-radius:6px;margin-top:3px;display:inline-block;font-weight:600;width:100%}
-  .emp-day-mini .tag-line{font-size:8px;margin-top:3px;color:var(--orange)}
-  .emp-actions{display:flex;justify-content:flex-end;margin-top:8px}
+  .emp-day-mini .mini-shift{width:100%;background:var(--panel2);border:1.5px solid var(--border);
+    color:var(--text);padding:6px 4px;border-radius:6px;font-size:13px;font-weight:700;
+    font-family:inherit;text-align:center;cursor:pointer}
+  .emp-day-mini .mini-time{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+  .emp-day-mini .mini-time input{width:100%;background:var(--panel2);border:1.5px solid var(--border);
+    color:var(--text);padding:6px 2px;border-radius:6px;font-size:13px;font-weight:700;
+    font-family:monospace;text-align:center}
+  .emp-day-mini .training-badge{font-size:11px;background:var(--purple);color:white;
+    padding:4px 6px;border-radius:6px;display:block;font-weight:700;width:100%;line-height:1.1}
+  .emp-day-mini .day-tag-line{font-size:10px;padding:2px 4px;border-radius:4px;font-weight:700;display:block}
+  .emp-actions{display:flex;justify-content:flex-end;margin-top:6px}
   .emp-actions button{background:none;border:1px solid var(--border);color:var(--red);
-    cursor:pointer;padding:3px 8px;border-radius:6px;font-size:11px;font-family:inherit}
+    cursor:pointer;padding:4px 10px;border-radius:6px;font-size:11px;font-family:inherit}
 
-  /* ===== МОДАЛЬНОЕ ОКНО ОБУЧЕНИЯ ===== */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
     z-index:10000;align-items:center;justify-content:center;padding:20px}
   .modal-overlay.show{display:flex}
@@ -237,10 +254,61 @@
 
   .empty-state{text-align:center;padding:30px;color:var(--muted);font-size:13px}
 
+  /* ===== ВЫРУЧКА + ПЛАНЫ ===== */
   .rev-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
   .rev-field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase}
   .rev-field input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);
     padding:10px 12px;border-radius:8px;font-size:15px;font-weight:600;font-family:inherit}
+
+  /* Планы */
+  .plan-card{background:var(--panel2);border-radius:10px;padding:14px;margin-bottom:12px;
+    border-left:4px solid var(--accent)}
+  .plan-card.disabled{opacity:.6;border-left-color:var(--muted)}
+  .plan-card h3{font-size:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .plan-card h3 .plan-title{display:flex;align-items:center;gap:6px}
+  .plan-toggle{background:var(--red);color:white;border:none;padding:4px 10px;border-radius:14px;
+    cursor:pointer;font-size:11px;font-weight:600;font-family:inherit}
+  .plan-toggle.enable{background:var(--green)}
+  .plan-periods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  @media(max-width:600px){.plan-periods{grid-template-columns:1fr}}
+  .plan-period{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:8px}
+  .plan-period.disabled{opacity:.5}
+  .plan-period .pp-label{font-size:10px;color:var(--muted);text-transform:uppercase;
+    margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+  .plan-period .pp-label .pp-toggle{background:none;border:none;color:var(--red);cursor:pointer;
+    font-size:11px;padding:0;font-weight:700}
+  .plan-period .pp-label .pp-toggle.enable{color:var(--green)}
+  .plan-period input{width:100%;background:var(--panel2);border:1px solid var(--border);
+    color:var(--text);padding:8px 10px;border-radius:6px;font-size:14px;font-weight:700;
+    font-family:inherit}
+  .plan-period input:disabled{opacity:.4;cursor:not-allowed}
+  .plan-period .pp-status{font-size:10px;margin-top:4px;color:var(--muted)}
+
+  /* План-график на дашборде */
+  .plan-dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+  .plan-dash-item{background:var(--panel2);border-radius:10px;padding:14px;
+    border-left:4px solid var(--blue)}
+  .plan-dash-item.done{border-left-color:var(--green)}
+  .plan-dash-item.warn{border-left-color:var(--yellow)}
+  .plan-dash-item.bad{border-left-color:var(--red)}
+  .plan-dash-item.disabled{opacity:.5;border-left-color:var(--muted)}
+  .plan-dash-item .pdi-head{display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:8px;flex-wrap:wrap;gap:6px}
+  .plan-dash-item .pdi-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
+  .plan-dash-item .pdi-period{font-size:10px;color:var(--muted);text-transform:uppercase}
+  .plan-dash-item .pdi-nums{display:flex;justify-content:space-between;font-size:12px;
+    margin-bottom:6px;flex-wrap:wrap;gap:4px}
+  .plan-dash-item .pdi-nums b{font-size:14px}
+  .plan-dash-item .pdi-bar{height:12px;background:var(--panel);border-radius:6px;overflow:hidden;position:relative}
+  .plan-dash-item .pdi-bar-fill{height:100%;border-radius:6px;transition:width .4s}
+  .plan-dash-item .pdi-bar-fill.done{background:linear-gradient(90deg,var(--green),#4ade80)}
+  .plan-dash-item .pdi-bar-fill.warn{background:linear-gradient(90deg,var(--yellow),#facc15)}
+  .plan-dash-item .pdi-bar-fill.bad{background:linear-gradient(90deg,var(--red),#f87171)}
+  .plan-dash-item .pdi-pct{font-size:16px;font-weight:700;margin-top:6px;text-align:right}
+  .plan-dash-item .pdi-pct.done{color:var(--green)}
+  .plan-dash-item .pdi-pct.warn{color:var(--yellow)}
+  .plan-dash-item .pdi-pct.bad{color:var(--red)}
+
   .rev-period{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
   .rev-period button{background:var(--panel2);border:1px solid var(--border);color:var(--text);
     padding:6px 14px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit}
@@ -255,10 +323,10 @@
   .rev-table td{padding:8px 6px;border-bottom:1px solid var(--border)}
 
   .toast{position:fixed;bottom:calc(24px + var(--safe-bottom));right:24px;background:var(--green);
-    color:#0f172a;padding:12px 20px;border-radius:10px;font-weight:600;opacity:0;transform:translateY(20px);
-    transition:all .3s;pointer-events:none;z-index:9999}
+    color:#fff;padding:12px 20px;border-radius:10px;font-weight:600;opacity:0;transform:translateY(20px);
+    transition:all .3s;pointer-events:none;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.3)}
   .toast.show{opacity:1;transform:translateY(0)}
-  .toast.error{background:var(--red);color:white}
+  .toast.error{background:var(--red)}
   .hint{font-size:12px;color:var(--muted);margin-top:8px}
 </style>
 </head>
@@ -268,6 +336,7 @@
   <button class="tab active" onclick="switchTab('dashboard')">📊 Дашборд</button>
   <button class="tab" onclick="switchTab('employees')">👥 Сотрудники</button>
   <button class="tab" onclick="switchTab('revenue')">💵 Выручка</button>
+  <button class="btn theme-btn secondary" onclick="toggleTheme()" title="Сменить тему" id="themeBtn">🌙</button>
 </div>
 
 <!-- ==================== ДАШБОРД ==================== -->
@@ -276,6 +345,9 @@
     <div><h1><span class="dab">DAB</span> · Дашборд</h1>
       <p class="subtitle">г. Новокузнецк · 10:00–17:30 / 14:00–22:00</p></div>
     <div class="header-actions">
+      <button class="btn refresh" onclick="refreshDashboard(this)" title="Пересчитать">
+        <span class="icon">🔄</span> Обновить данные
+      </button>
       <button class="btn secondary" onclick="window.print()">🖨 PDF</button>
       <button class="btn green" onclick="exportCSV()">📥 CSV</button>
     </div>
@@ -284,11 +356,16 @@
   <div class="date-picker">
     <label>📅 Дата:</label>
     <input type="date" id="dateInput">
-    <button class="btn" onclick="recalculate()">Пересчитать</button>
     <span id="weatherBadge" style="font-size:12px;color:var(--muted);">🌤️ Погода…</span>
   </div>
 
   <div class="kpi-row" id="kpiRow"></div>
+
+  <!-- ВЫПОЛНЕНИЕ ПЛАНОВ -->
+  <div class="card">
+    <h2>📊 Выполнение планов <span class="badge">выручка · СБП · услуги</span></h2>
+    <div id="planDash"></div>
+  </div>
 
   <div class="card">
     <h2>📦 Поставка <span class="badge">только вручную</span></h2>
@@ -298,11 +375,10 @@
       <button class="btn orange" onclick="addSupply()">+ Добавить</button>
     </div>
     <div class="supply-list" id="supplyList"></div>
-    <p class="hint">Поставка учитывается в прогнозе и подсвечивается в графике только если вы её добавили.</p>
   </div>
 
   <div class="card">
-    <h2>🏷️ Период распродажи <span class="badge">влияет на прогноз</span></h2>
+    <h2>🏷️ Период распродажи</h2>
     <div class="sale-form">
       <div class="fld"><label>Начало</label><input type="date" id="saleStart"></div>
       <div class="fld"><label>Конец</label><input type="date" id="saleEnd"></div>
@@ -313,7 +389,7 @@
   </div>
 
   <div class="card">
-    <h2>📅 График смен <span class="badge">базовое число сотрудников</span></h2>
+    <h2>📅 График смен</h2>
     <div class="shift-calendar" id="shiftCalendar"></div>
   </div>
 
@@ -337,7 +413,7 @@
       <div class="lg-item"><span class="swatch" style="background:#eab308">сред</span>Средняя</div>
       <div class="lg-item"><span class="swatch" style="background:#f97316">выс</span>Высокая</div>
       <div class="lg-item"><span class="swatch" style="background:#ef4444">пик</span>Пик</div>
-      <div class="lg-item"><span class="swatch" style="background:rgba(249,115,22,.5);color:var(--orange)">📦</span>Час поставки</div>
+      <div class="lg-item"><span class="swatch" style="background:rgba(249,115,22,.5);color:var(--orange)">📦</span>Поставка</div>
       <div class="lg-item"><span class="swatch" style="background:rgba(168,85,247,.5);color:var(--purple)">🎓</span>Обучение</div>
     </div>
     <div style="overflow-x:auto;"><table class="heatmap-table" id="heatmap"></table></div>
@@ -360,6 +436,11 @@
   <div class="header">
     <div><h1>👥 Сотрудники</h1>
       <p class="subtitle">Добавление · планирование всех сотрудников на неделю</p></div>
+    <div class="header-actions">
+      <button class="btn refresh" onclick="refreshDashboard(this)">
+        <span class="icon">🔄</span> Обновить
+      </button>
+    </div>
   </div>
 
   <div class="card">
@@ -374,17 +455,20 @@
 
   <div class="card">
     <h2>🗓 Планирование на неделю · все сотрудники <span class="badge" id="empCount">0</span></h2>
-    <p class="hint" style="margin-bottom:14px;">Для каждого сотрудника отметьте дни: ✅ работа, 🏥 больничный, 🏖️ выходной, 🎓 обучение/meeting. Для рабочих дней можно выбрать смену и скорректировать время прихода/ухода.</p>
+    <p class="hint" style="margin-bottom:14px;">Отметьте дни: ✅ работа, 🏥 больничный, 🏖️ выходной, 🎓 обучение.</p>
     <div class="emp-week-table" id="empWeekTable"></div>
   </div>
 </div>
 
-<!-- ==================== ВЫРУЧКА ==================== -->
+<!-- ==================== ВЫРУЧКА + ПЛАНЫ ==================== -->
 <div class="view" id="view-revenue">
   <div class="header">
-    <div><h1>💵 Выручка</h1>
-      <p class="subtitle">Ввод по дням · аналитика по периодам</p></div>
+    <div><h1>💵 Выручка и планы</h1>
+      <p class="subtitle">Ввод выручки · планы по выручке, СБП и услугам</p></div>
     <div class="header-actions">
+      <button class="btn refresh" onclick="refreshDashboard(this)">
+        <span class="icon">🔄</span> Обновить
+      </button>
       <button class="btn green small" onclick="exportCSV()">📥 CSV</button>
     </div>
   </div>
@@ -399,8 +483,91 @@
     </div>
   </div>
 
+  <!-- ПЛАНЫ -->
   <div class="card">
-    <h2>📊 Аналитика</h2>
+    <h2>🎯 Планы <span class="badge">на день / неделю / месяц · можно отключить</span></h2>
+    <p class="hint" style="margin-bottom:14px;">Задайте планы по каждому показателю. Кнопка «🚫 Нет плана» отключает показатель — он не учитывается на дашборде.</p>
+
+    <!-- Выручка -->
+    <div class="plan-card" id="planCardRevenue">
+      <h3><span class="plan-title">💰 План по выручке</span>
+        <button class="plan-toggle" onclick="togglePlan('revenue')" id="toggleRevenue">🚫 Нет плана</button>
+      </h3>
+      <div class="plan-periods">
+        <div class="plan-period">
+          <div class="pp-label">День <button class="pp-toggle" onclick="togglePlanPeriod('revenue','day')" id="ppRevDay">🚫</button></div>
+          <input type="number" id="planRevenueDay" placeholder="0" onchange="savePlan('revenue','day',this.value)">
+          <div class="pp-status" id="statusRevDay"></div>
+        </div>
+        <div class="plan-period">
+          <div class="pp-label">Неделя <button class="pp-toggle" onclick="togglePlanPeriod('revenue','week')" id="ppRevWeek">🚫</button></div>
+          <input type="number" id="planRevenueWeek" placeholder="0" onchange="savePlan('revenue','week',this.value)">
+          <div class="pp-status" id="statusRevWeek"></div>
+        </div>
+        <div class="plan-period">
+          <div class="pp-label">Месяц <button class="pp-toggle" onclick="togglePlanPeriod('revenue','month')" id="ppRevMonth">🚫</button></div>
+          <input type="number" id="planRevenueMonth" placeholder="0" onchange="savePlan('revenue','month',this.value)">
+          <div class="pp-status" id="statusRevMonth"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- СБП -->
+    <div class="plan-card" id="planCardSbp">
+      <h3><span class="plan-title">📱 План по СБП</span>
+        <button class="plan-toggle" onclick="togglePlan('sbp')" id="toggleSbp">🚫 Нет плана</button>
+      </h3>
+      <div class="plan-periods">
+        <div class="plan-period">
+          <div class="pp-label">День <button class="pp-toggle" onclick="togglePlanPeriod('sbp','day')" id="ppSbpDay">🚫</button></div>
+          <input type="number" id="planSbpDay" placeholder="0" onchange="savePlan('sbp','day',this.value)">
+          <div class="pp-status" id="statusSbpDay"></div>
+        </div>
+        <div class="plan-period">
+          <div class="pp-label">Неделя <button class="pp-toggle" onclick="togglePlanPeriod('sbp','week')" id="ppSbpWeek">🚫</button></div>
+          <input type="number" id="planSbpWeek" placeholder="0" onchange="savePlan('sbp','week',this.value)">
+          <div class="pp-status" id="statusSbpWeek"></div>
+        </div>
+        <div class="plan-period">
+          <div class="pp-label">Месяц <button class="pp-toggle" onclick="togglePlanPeriod('sbp','month')" id="ppSbpMonth">🚫</button></div>
+          <input type="number" id="planSbpMonth" placeholder="0" onchange="savePlan('sbp','month',this.value)">
+          <div class="pp-status" id="statusSbpMonth"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Услуги -->
+    <div class="plan-card" id="planCardServices">
+      <h3><span class="plan-title">✂️ План по услугам</span>
+        <button class="plan-toggle" onclick="togglePlan('services')" id="toggleServices">🚫 Нет плана</button>
+      </h3>
+      <div class="plan-periods">
+        <div class="plan-period">
+          <div class="pp-label">День <button class="pp-toggle" onclick="togglePlanPeriod('services','day')" id="ppSrvDay">🚫</button></div>
+          <input type="number" id="planServicesDay" placeholder="0" onchange="savePlan('services','day',this.value)">
+          <div class="pp-status" id="statusSrvDay"></div>
+        </div>
+        <div class="plan-period">
+          <div class="pp-label">Неделя <button class="pp-toggle" onclick="togglePlanPeriod('services','week')" id="ppSrvWeek">🚫</button></div>
+          <input type="number" id="planServicesWeek" placeholder="0" onchange="savePlan('services','week',this.value)">
+          <div class="pp-status" id="statusSrvWeek"></div>
+        </div>
+        <div class="plan-period">
+          <div class="pp-label">Месяц <button class="pp-toggle" onclick="togglePlanPeriod('services','month')" id="ppSrvMonth">🚫</button></div>
+          <input type="number" id="planServicesMonth" placeholder="0" onchange="savePlan('services','month',this.value)">
+          <div class="pp-status" id="statusSrvMonth"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
+      <button class="btn pink" onclick="recalculate()">💾 Применить и обновить дашборд</button>
+    </div>
+  </div>
+
+  <!-- Аналитика выручки -->
+  <div class="card">
+    <h2>📊 Аналитика выручки</h2>
     <div class="rev-period">
       <button class="active" data-p="7" onclick="setPeriod(7)">7 дней</button>
       <button data-p="14" onclick="setPeriod(14)">14</button>
@@ -413,20 +580,17 @@
   </div>
 </div>
 
-<!-- ===== МОДАЛЬНОЕ ОКНО ОБУЧЕНИЯ ===== -->
+<!-- Модалка обучения -->
 <div class="modal-overlay" id="trainingModal" onclick="if(event.target===this)closeTrainingModal()">
   <div class="modal">
     <h3>🎓 Обучение / Meeting</h3>
     <p class="modal-sub" id="trainingModalSub">Выберите время начала и окончания</p>
-
     <label class="time-label">Начало</label>
     <div class="time-scroll" id="startTimeScroll"></div>
-
     <label class="time-label">Окончание</label>
     <div class="time-scroll" id="endTimeScroll"></div>
-
     <div class="modal-actions">
-      <button class="modal-clear" onclick="clearTraining()">🗑 Убрать обучение</button>
+      <button class="modal-clear" onclick="clearTraining()">🗑 Убрать</button>
       <button class="btn secondary" onclick="closeTrainingModal()">Отмена</button>
       <button class="btn purple" onclick="saveTraining()">💾 Применить</button>
     </div>
@@ -457,31 +621,142 @@ const HOLIDAY_COEF={
   '02-23':1.5,'03-08':1.7,'05-01':1.6,'05-09':1.6,'06-12':1.4,'11-04':1.4
 };
 
-// Список времени с шагом 30 минут: 10:00 – 22:00
-const TIME_OPTIONS = (function(){
+const TIME_OPTIONS=(function(){
   const arr=[];
   for(let h=10;h<=22;h++){
     arr.push(String(h).padStart(2,'0')+':00');
-    if(h<22) arr.push(String(h).padStart(2,'0')+':30');
+    if(h<22)arr.push(String(h).padStart(2,'0')+':30');
   }
   return arr;
 })();
 
 /* ===================== ХРАНИЛИЩА ===================== */
 const KEYS={
-  rev:'dab_rev_v5',
-  shifts:'dab_shifts_v5',
-  supply:'dab_supply_v5',
-  sale:'dab_sale_v5',
-  saleOff:'dab_sale_off_v5',
-  employees:'dab_employees_v5',
-  empPlan:'dab_emp_plan_v5',
-  weather:'dab_weather_cache_v5'
+  rev:'dab_rev_v7',
+  shifts:'dab_shifts_v7',
+  supply:'dab_supply_v7',
+  sale:'dab_sale_v7',
+  saleOff:'dab_sale_off_v7',
+  employees:'dab_employees_v7',
+  empPlan:'dab_emp_plan_v7',
+  weather:'dab_weather_cache_v7',
+  theme:'dab_theme_v7',
+  plans:'dab_plans_v7'
 };
 
 function load(key,def={}){try{return JSON.parse(localStorage.getItem(key))||def}catch(e){return def}}
 function save(key,obj){localStorage.setItem(key,JSON.stringify(obj))}
 
+/* ===== ТЕМА ===== */
+function applyTheme(){
+  const theme=localStorage.getItem(KEYS.theme)||'dark';
+  if(theme==='light')document.body.classList.add('light');
+  else document.body.classList.remove('light');
+  const btn=document.getElementById('themeBtn');
+  if(btn)btn.textContent=theme==='light'?'☀️':'🌙';
+}
+function toggleTheme(){
+  const cur=localStorage.getItem(KEYS.theme)||'dark';
+  localStorage.setItem(KEYS.theme,cur==='dark'?'light':'dark');
+  applyTheme();
+  showToast(cur==='dark'?'☀️ Светлая тема':'🌙 Тёмная тема');
+}
+
+/* ===== ПЛАНЫ ===== */
+// Структура: {revenue:{disabled:false, day:{value:0, disabled:false}, week:..., month:...}, sbp:..., services:...}
+function loadPlans(){
+  const def={
+    revenue:{disabled:false,day:{value:0,disabled:false},week:{value:0,disabled:false},month:{value:0,disabled:false}},
+    sbp:{disabled:false,day:{value:0,disabled:false},week:{value:0,disabled:false},month:{value:0,disabled:false}},
+    services:{disabled:false,day:{value:0,disabled:false},week:{value:0,disabled:false},month:{value:0,disabled:false}}
+  };
+  const stored=load(KEYS.plans,null);
+  if(!stored)return def;
+  // Мержим с дефолтом на случай новых полей
+  ['revenue','sbp','services'].forEach(k=>{
+    if(!stored[k])stored[k]=def[k];
+    ['day','week','month'].forEach(p=>{
+      if(!stored[k][p])stored[k][p]={value:0,disabled:false};
+    });
+    if(stored[k].disabled===undefined)stored[k].disabled=false;
+  });
+  return stored;
+}
+function savePlans(p){save(KEYS.plans,p)}
+
+function togglePlan(type){
+  const p=loadPlans();
+  p[type].disabled=!p[type].disabled;
+  savePlans(p);
+  renderPlanForm();
+  recalculate();
+  showToast(p[type].disabled?`🚫 ${planTypeName(type)} отключён`:`✅ ${planTypeName(type)} включён`);
+}
+function togglePlanPeriod(type,period){
+  const p=loadPlans();
+  p[type][period].disabled=!p[type][period].disabled;
+  savePlans(p);
+  renderPlanForm();
+  recalculate();
+}
+function savePlan(type,period,val){
+  const p=loadPlans();
+  const num=parseFloat(val)||0;
+  p[type][period].value=num;
+  // Если ввели значение — авто-включаем период
+  if(num>0 && p[type][period].disabled){
+    p[type][period].disabled=false;
+    p[type].disabled=false;
+  }
+  savePlans(p);
+  renderPlanForm();
+}
+function planTypeName(type){
+  return {revenue:'План по выручке',sbp:'План по СБП',services:'План по услугам'}[type];
+}
+
+function renderPlanForm(){
+  const p=loadPlans();
+  ['revenue','sbp','services'].forEach(type=>{
+    const titleCase=type.charAt(0).toUpperCase()+type.slice(1);
+    // Верхняя кнопка "Нет плана"
+    const toggleBtn=document.getElementById('toggle'+titleCase);
+    if(toggleBtn){
+      toggleBtn.textContent=p[type].disabled?'✅ Включить':'🚫 Нет плана';
+      toggleBtn.className='plan-toggle'+(p[type].disabled?' enable':'');
+    }
+    const card=document.getElementById('planCard'+titleCase);
+    if(card)card.classList.toggle('disabled',p[type].disabled);
+
+    ['day','week','month'].forEach(period=>{
+      const periodName=period==='day'?'Day':period==='week'?'Week':'Month';
+      const typePrefix={revenue:'Rev',sbp:'Sbp',services:'Srv'}[type];
+      const ppBtn=document.getElementById('pp'+typePrefix+periodName);
+      const inp=document.getElementById('plan'+titleCase+periodName);
+      const status=document.getElementById('status'+typePrefix+periodName);
+      const periodCard=inp?.closest('.plan-period');
+
+      if(ppBtn){
+        ppBtn.textContent=p[type][period].disabled?'✅':'🚫';
+        ppBtn.className='pp-toggle'+(p[type][period].disabled?' enable':'');
+      }
+      if(inp){
+        inp.value=p[type][period].value||'';
+        inp.disabled=p[type].disabled||p[type][period].disabled;
+      }
+      if(status){
+        if(p[type].disabled)status.textContent='Весь план отключён';
+        else if(p[type][period].disabled)status.textContent='Период отключён';
+        else if(p[type][period].value>0)status.textContent='Активен';
+        else status.textContent='Не задан';
+        status.style.color=p[type].disabled||p[type][period].disabled?'var(--muted)':'var(--green)';
+      }
+      if(periodCard)periodCard.classList.toggle('disabled',p[type].disabled||p[type][period].disabled);
+    });
+  });
+}
+
+/* ===================== ОСТАЛЬНЫЕ ХРАНИЛИЩА ===================== */
 function loadShifts(){return load(KEYS.shifts)}
 function getShiftForDate(ds){const all=loadShifts();return all[ds]||{s1:3,s2:3}}
 function setShiftForDate(ds,s1,s2){const all=loadShifts();all[ds]={s1:Math.max(0,s1),s2:Math.max(0,s2)};save(KEYS.shifts,all)}
@@ -495,8 +770,7 @@ function loadEmployees(){
     {id:'e3',last:'Сидорова',first:'Елена',middle:''},
     {id:'e4',last:'Козлов',first:'Дмитрий',middle:'Алексеевич'}
   ];
-  save(KEYS.employees,defaults);
-  return defaults;
+  save(KEYS.employees,defaults);return defaults;
 }
 function saveEmployees(arr){save(KEYS.employees,arr)}
 function empFIO(e){return [e.last,e.first,e.middle].filter(Boolean).join(' ')}
@@ -505,7 +779,6 @@ function loadEmpPlan(){return load(KEYS.empPlan,{})}
 function getEmpPlanDay(empId,ds){
   const all=loadEmpPlan();
   const p=(all[empId]&&all[empId][ds])||{type:'work',shift:'both',inTime:'',outTime:'',trainStart:'',trainEnd:''};
-  // Совместимость: гарантируем поля обучения
   if(p.trainStart===undefined)p.trainStart='';
   if(p.trainEnd===undefined)p.trainEnd='';
   return p;
@@ -580,7 +853,6 @@ function getSaleCoef(d){
 
 function isSalaryDay(d){const day=d.getDate();return(day>=5&&day<=10)||(day>=20&&day<=25)}
 
-/* Доступность с учётом планов сотрудников + обучение */
 function availableStaffForDay(ds,hour){
   const base=getShiftForDate(ds);
   let baseCount=0;
@@ -592,15 +864,11 @@ function availableStaffForDay(ds,hour){
   emps.forEach(emp=>{
     const plan=getEmpPlanDay(emp.id,ds);
     if(plan.type==='sick'||plan.type==='off')return;
-
-    // Если в этот час идёт обучение — сотрудник недоступен
     if(plan.trainStart&&plan.trainEnd){
-      const th=hour;
       const ts=hourFromTime(plan.trainStart);
       const te=hourFromTime(plan.trainEnd);
-      if(th>=ts && th<te) return; // на обучении
+      if(hour>=ts&&hour<te)return;
     }
-
     const inH=hourFromTime(plan.inTime);
     const outH=hourFromTime(plan.outTime);
     let sh,eh;
@@ -615,7 +883,6 @@ function availableStaffForDay(ds,hour){
   return Math.max(effectiveBase,available);
 }
 
-/* Есть ли обучение у кого-либо в этот час */
 function trainingAtHour(ds,hour){
   const emps=loadEmployees();
   for(const emp of emps){
@@ -624,7 +891,7 @@ function trainingAtHour(ds,hour){
     if(plan.trainStart&&plan.trainEnd){
       const ts=hourFromTime(plan.trainStart);
       const te=hourFromTime(plan.trainEnd);
-      if(hour>=ts && hour<te) return true;
+      if(hour>=ts&&hour<te)return true;
     }
   }
   return false;
@@ -648,11 +915,8 @@ async function calculateDay(d){
   factors.push({icon:w.icon,text:`Погода: ${w.text}`,coef:w.coef,cls:w.cls});
 
   const supply=getSupplyForDate(ds);
-  if(supply){
-    factors.push({icon:'📦',text:`Поставка в ${supply.time}`,coef:1.15,cls:'green'});
-  } else {
-    factors.push({icon:'📦',text:'Без поставки',coef:1.0,cls:'yellow'});
-  }
+  if(supply)factors.push({icon:'📦',text:`Поставка в ${supply.time}`,coef:1.15,cls:'green'});
+  else factors.push({icon:'📦',text:'Без поставки',coef:1.0,cls:'yellow'});
 
   const s=getSaleCoef(d);
   factors.push({icon:'🏷️',text:s.text,coef:s.coef,cls:s.cls});
@@ -696,7 +960,17 @@ function switchTab(name){
   document.querySelector(`.tab[onclick*="'${name}'"]`).classList.add('active');
   document.getElementById('view-'+name).classList.add('active');
   if(name==='employees')renderEmployeesWeekTable();
-  if(name==='revenue')renderRevenue();
+  if(name==='revenue'){renderPlanForm();renderRevenue();}
+}
+
+/* ===== КНОПКА ОБНОВИТЬ ===== */
+async function refreshDashboard(btn){
+  if(btn){btn.classList.add('spinning');btn.disabled=true}
+  weatherCache={};
+  localStorage.removeItem(KEYS.weather);
+  await recalculate();
+  if(btn){btn.classList.remove('spinning');btn.disabled=false}
+  showToast('🔄 Данные обновлены');
 }
 
 /* ===================== ДАШБОРД ===================== */
@@ -729,6 +1003,101 @@ function renderKPIs(data){
     <div class="delta">${k.delta}</div></div>`).join('');
 }
 
+/* ===== ГРАФИК ВЫПОЛНЕНИЯ ПЛАНОВ ===== */
+function getPeriodRange(period,today){
+  const start=new Date(today);
+  let end=new Date(today);
+  if(period==='day'){start.setHours(0,0,0,0);end.setHours(23,59,59,999);}
+  else if(period==='week'){
+    const dow=start.getDay();
+    start.setDate(start.getDate()+((dow===0)?-6:1-dow));
+    end=new Date(start);end.setDate(start.getDate()+6);
+  }
+  else{ // month
+    start.setDate(1);
+    end=new Date(start.getFullYear(),start.getMonth()+1,0);
+  }
+  return {start:toDateStr(start),end:toDateStr(end)};
+}
+
+function getFactForPeriod(period,today){
+  const range=getPeriodRange(period,today);
+  const rev=loadRevenue();
+  let fact=0;
+  Object.entries(rev).forEach(([ds,v])=>{
+    if(ds>=range.start&&ds<=range.end)fact+=v.amount||0;
+  });
+  return fact;
+}
+
+function renderPlanDashboard(){
+  const plans=loadPlans();
+  const today=new Date();
+  const el=document.getElementById('planDash');
+  if(!el)return;
+
+  const typeMeta={
+    revenue:{icon:'💰',label:'Выручка',color:'var(--pink)'},
+    sbp:{icon:'📱',label:'СБП',color:'var(--cyan)'},
+    services:{icon:'✂️',label:'Услуги',color:'var(--purple)'}
+  };
+  const periodMeta={day:'День',week:'Неделя',month:'Месяц'};
+
+  let html='';
+  ['revenue','sbp','services'].forEach(type=>{
+    const planData=plans[type];
+    const meta=typeMeta[type];
+
+    // Если весь тип отключён — показываем одну серую заглушку
+    if(planData.disabled){
+      html+=`<div class="plan-dash-item disabled">
+        <div class="pdi-head">
+          <div class="pdi-title">${meta.icon} ${meta.label}</div>
+          <div class="pdi-period">отключён</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);text-align:center;padding:8px;">🚫 Нет плана</div>
+      </div>`;
+      return;
+    }
+
+    Object.keys(periodMeta).forEach(period=>{
+      const pd=planData[period];
+      // Пропускаем отключённые периоды и не заданные планы
+      if(pd.disabled)return;
+      if(!pd.value||pd.value<=0)return;
+
+      const fact=getFactForPeriod(period,today);
+      const plan=pd.value;
+      const pct=plan>0?(fact/plan*100):0;
+      const displayPct=Math.min(100,pct);
+
+      let statusCls='bad';
+      if(pct>=100)statusCls='done';
+      else if(pct>=70)statusCls='warn';
+
+      html+=`<div class="plan-dash-item ${statusCls}">
+        <div class="pdi-head">
+          <div class="pdi-title">${meta.icon} ${meta.label}</div>
+          <div class="pdi-period">${periodMeta[period]}</div>
+        </div>
+        <div class="pdi-nums">
+          <span>Факт: <b>${formatRub(fact)}</b></span>
+          <span style="color:var(--muted)">План: ${formatRub(plan)}</span>
+        </div>
+        <div class="pdi-bar">
+          <div class="pdi-bar-fill ${statusCls}" style="width:${displayPct}%"></div>
+        </div>
+        <div class="pdi-pct ${statusCls}">${pct.toFixed(1)}%</div>
+      </div>`;
+    });
+  });
+
+  if(!html.trim()){
+    html=`<div class="empty-state">Планы не заданы. Перейдите во вкладку «💵 Выручка» → блок «🎯 Планы».</div>`;
+  }
+  el.innerHTML=`<div class="plan-dash-grid">${html}</div>`;
+}
+
 function renderFactors(data){
   document.getElementById('dateBadge').textContent=data.dateStr;
   document.getElementById('factorList').innerHTML=data.factors.map(f=>`
@@ -748,7 +1117,7 @@ function renderHourlyChart(data){
     let extra='';let lbl=HOURS[i];
     if(isSupplyHour){extra+=';box-shadow:0 0 0 2px var(--orange) inset';lbl='📦 '+HOURS[i]}
     if(isTrain){extra+=';box-shadow:0 0 0 2px var(--purple) inset';lbl='🎓 '+HOURS[i]}
-    return `<div class="bar" style="height:${h}%;background:${c}${extra}" title="${HOURS[i]}:00 — ${v} чел.${isSupplyHour?' · поставка':''}${isTrain?' · обучение':''}"><span class="bar-label">${lbl}</span></div>`;
+    return `<div class="bar" style="height:${h}%;background:${c}${extra}" title="${HOURS[i]}:00 — ${v} чел."><span class="bar-label">${lbl}</span></div>`;
   }).join('');
 }
 
@@ -943,7 +1312,7 @@ function renderSupplyList(){
     <button onclick="removeSupply('${s.date}')" title="Удалить">×</button></div>`).join('');
 }
 
-/* ===================== СОТРУДНИКИ: планирование всех ===================== */
+/* ===================== СОТРУДНИКИ ===================== */
 function renderEmployeesWeekTable(){
   const emps=loadEmployees();
   document.getElementById('empCount').textContent=emps.length;
@@ -952,7 +1321,6 @@ function renderEmployeesWeekTable(){
     wrap.innerHTML='<div class="empty-state">Список сотрудников пуст — добавьте сотрудника выше.</div>';
     return;
   }
-
   const today=new Date();
   const dow=today.getDay();
   const start=new Date(today);
@@ -963,7 +1331,6 @@ function renderEmployeesWeekTable(){
 
   let html='';
   emps.forEach(emp=>{
-    // Статистика
     let stats={work:0,sick:0,off:0,train:0};
     for(let i=0;i<7;i++){
       const cur=new Date(start);cur.setDate(start.getDate()+i);
@@ -1001,19 +1368,21 @@ function renderEmployeesWeekTable(){
       if(isToday)cls.push('today');
 
       html+=`<div class="${cls.join(' ')}">
-        <div class="day-name">${DOW_NAMES[cur.getDay()]}</div>
-        <div class="day-num">${cur.getDate()}.${String(cur.getMonth()+1).padStart(2,'0')}</div>
+        <div class="day-head">
+          <span>${DOW_NAMES[cur.getDay()]}</span>
+          <span class="day-num">${cur.getDate()}.${String(cur.getMonth()+1).padStart(2,'0')}</span>
+        </div>
         <div class="mini-btns">
           <button class="${p.type==='work'?'active':''}" title="Работа" onclick="setType('${emp.id}','${ds}','work')">✅</button>
           <button class="sick ${p.type==='sick'?'active':''}" title="Больничный" onclick="setType('${emp.id}','${ds}','sick')">🏥</button>
           <button class="off ${p.type==='off'?'active':''}" title="Выходной" onclick="setType('${emp.id}','${ds}','off')">🏖️</button>
-          <button class="training ${hasTraining?'active':''}" title="Обучение/Meeting" onclick="openTrainingModal('${emp.id}','${ds}')">🎓</button>
+          <button class="training ${hasTraining?'active':''}" title="Обучение" onclick="openTrainingModal('${emp.id}','${ds}')">🎓</button>
         </div>
         ${p.type==='work'?`
           <select class="mini-shift" onchange="updatePlan('${emp.id}','${ds}','shift',this.value)">
-            <option value="both" ${p.shift==='both'?'selected':''}>Обе</option>
-            <option value="s1" ${p.shift==='s1'?'selected':''}>1-я</option>
-            <option value="s2" ${p.shift==='s2'?'selected':''}>2-я</option>
+            <option value="both" ${p.shift==='both'?'selected':''}>Обе смены</option>
+            <option value="s1" ${p.shift==='s1'?'selected':''}>1-я 10–17:30</option>
+            <option value="s2" ${p.shift==='s2'?'selected':''}>2-я 14–22</option>
           </select>
           <div class="mini-time">
             <input type="time" value="${p.inTime||(p.shift==='s2'?'14:00':p.shift==='s1'?'10:00':'10:00')}" onchange="updatePlan('${emp.id}','${ds}','inTime',this.value)">
@@ -1021,14 +1390,14 @@ function renderEmployeesWeekTable(){
           </div>
         `:''}
         ${hasTraining?`<div class="training-badge">🎓 ${p.trainStart}–${p.trainEnd}</div>`:''}
-        ${inSale?`<div class="tag-line">🏷️</div>`:''}
-        ${sup?`<div class="tag-line">📦 ${sup.time}</div>`:''}
+        ${inSale?`<div class="day-tag-line" style="background:rgba(236,72,153,.2);color:var(--pink)">🏷️</div>`:''}
+        ${sup?`<div class="day-tag-line" style="background:rgba(249,115,22,.2);color:var(--orange)">📦 ${sup.time}</div>`:''}
       </div>`;
     }
 
     html+=`</div>
       <div class="emp-actions">
-        <button onclick="removeEmployee('${emp.id}')">🗑 Удалить сотрудника</button>
+        <button onclick="removeEmployee('${emp.id}')">🗑 Удалить</button>
       </div>
     </div>`;
   });
@@ -1080,7 +1449,7 @@ function removeEmployee(id){
   showToast('Сотрудник удалён');
 }
 
-/* ===================== МОДАЛЬНОЕ ОКНО ОБУЧЕНИЯ ===================== */
+/* ===================== ОБУЧЕНИЕ ===================== */
 let trainingCtx={empId:null,ds:null,start:'',end:''};
 
 function openTrainingModal(empId,ds){
@@ -1089,14 +1458,11 @@ function openTrainingModal(empId,ds){
   trainingCtx.ds=ds;
   trainingCtx.start=plan.trainStart||'';
   trainingCtx.end=plan.trainEnd||'';
-
   const emp=loadEmployees().find(e=>e.id===empId);
   document.getElementById('trainingModalSub').textContent=
     `${emp?empFIO(emp):''} · ${new Date(ds+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}`;
-
   renderTimeScroll('startTimeScroll','start');
   renderTimeScroll('endTimeScroll','end');
-
   document.getElementById('trainingModal').classList.add('show');
 }
 
@@ -1104,7 +1470,6 @@ function renderTimeScroll(containerId,which){
   const el=document.getElementById(containerId);
   const selected=which==='start'?trainingCtx.start:trainingCtx.end;
   const other=which==='start'?trainingCtx.end:trainingCtx.start;
-
   el.innerHTML=TIME_OPTIONS.map(t=>{
     let disabled='';
     if(which==='start'&&other&&t>=other)disabled=' taken';
@@ -1112,8 +1477,6 @@ function renderTimeScroll(containerId,which){
     const isSel=t===selected?' selected':'';
     return `<div class="time-option${isSel}${disabled}" onclick="selectTime('${which}','${t}')">${t}</div>`;
   }).join('');
-
-  // Прокрутка к выбранному
   if(selected){
     setTimeout(()=>{
       const selEl=el.querySelector('.selected');
@@ -1135,12 +1498,8 @@ function selectTime(which,t){
 }
 
 function saveTraining(){
-  if(!trainingCtx.start||!trainingCtx.end){
-    return showToast('Выберите время начала и окончания',true);
-  }
-  if(trainingCtx.start>=trainingCtx.end){
-    return showToast('Конец должен быть позже начала',true);
-  }
+  if(!trainingCtx.start||!trainingCtx.end)return showToast('Выберите время',true);
+  if(trainingCtx.start>=trainingCtx.end)return showToast('Конец позже начала',true);
   const cur=getEmpPlanDay(trainingCtx.empId,trainingCtx.ds);
   cur.trainStart=trainingCtx.start;
   cur.trainEnd=trainingCtx.end;
@@ -1154,8 +1513,7 @@ function saveTraining(){
 
 function clearTraining(){
   const cur=getEmpPlanDay(trainingCtx.empId,trainingCtx.ds);
-  cur.trainStart='';
-  cur.trainEnd='';
+  cur.trainStart='';cur.trainEnd='';
   setEmpPlanDay(trainingCtx.empId,trainingCtx.ds,cur);
   closeTrainingModal();
   renderEmployeesWeekTable();
@@ -1179,11 +1537,11 @@ function saveRevenue(){
   const all=loadRevenue();all[ds]={amount:amt,checks:chk};
   save(KEYS.rev,all);
   document.getElementById('revAmount').value='';document.getElementById('revChecks').value='';
-  showToast('✅ Сохранено');renderRevenue();
+  showToast('✅ Сохранено');renderRevenue();renderPlanDashboard();
 }
 function clearRevenue(){
   if(!confirm('Удалить все данные о выручке?'))return;
-  localStorage.removeItem(KEYS.rev);renderRevenue();showToast('Данные очищены');
+  localStorage.removeItem(KEYS.rev);renderRevenue();renderPlanDashboard();showToast('Данные очищены');
 }
 function setPeriod(p){
   revPeriod=p;
@@ -1241,6 +1599,14 @@ function exportCSV(){
     });
   });
   loadSupplies().forEach(s=>rows.push(['Поставка',s.date,s.time,'','','','']));
+  // Планы
+  const plans=loadPlans();
+  ['revenue','sbp','services'].forEach(type=>{
+    ['day','week','month'].forEach(period=>{
+      const p=plans[type][period];
+      if(!p.disabled && p.value>0) rows.push(['План',`${type}_${period}`,p.value,'','','','']);
+    });
+  });
   const csv='\uFEFF'+rows.map(r=>r.map(c=>`"${c}"`).join(';')).join('\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
@@ -1270,7 +1636,7 @@ function updateSaleStatus(){
   const s=loadSale();
   const el=document.getElementById('saleStatus');
   if(isSaleDisabled()){
-    el.textContent='🚫 Распродажа отключена — коэффициент 1.0 на все дни';
+    el.textContent='🚫 Распродажа отключена';
     el.style.color='var(--red)';
   } else if(s.start&&s.end){
     el.textContent=`✅ Распродажа: ${s.start} — ${s.end}`;
@@ -1304,12 +1670,15 @@ async function recalculate(){
   renderStaffTable(data);
   renderShiftCalendar(date);
   renderSupplyList();
+  renderPlanDashboard();
+  renderPlanForm();
 }
 
 function selectDate(ds){document.getElementById('dateInput').value=ds;recalculate()}
 
 /* ===================== INIT ===================== */
 (async function init(){
+  applyTheme();
   const today=new Date();
   const todayStr=toDateStr(today);
   document.getElementById('dateInput').value=todayStr;
@@ -1324,6 +1693,7 @@ function selectDate(ds){document.getElementById('dateInput').value=ds;recalculat
 
   renderSupplyList();
   renderEmployeesWeekTable();
+  renderPlanForm();
   await recalculate();
 })();
 </script>
