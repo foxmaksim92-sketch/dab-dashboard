@@ -2,10 +2,21 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="description" content="DAB Новокузнецк — дашборд нагрузки персонала и аналитики выручки">
+<meta name="theme-color" content="#0f172a">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DAB">
+<meta name="mobile-web-app-capable" content="yes">
+
 <title>DAB · Новокузнецк · Дашборд</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>">
+
 <style>
   :root {
     --bg: #0f172a; --panel: #1e293b; --panel2: #273449;
@@ -13,22 +24,21 @@
     --green: #22c55e; --yellow: #eab308; --red: #ef4444;
     --blue: #3b82f6; --accent: #8b5cf6; --border: #334155;
     --pink: #ec4899;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html { scroll-behavior: smooth; }
   body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     background: var(--bg); color: var(--text);
-    padding: 20px; font-size: 14px; line-height: 1.4;
+    padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
+    font-size: 14px; line-height: 1.4;
+    overscroll-behavior-y: contain;
   }
-  @media (max-width: 640px) { body { padding: 12px; } }
+  @media (max-width: 640px) { body { padding: calc(12px + var(--safe-top)) 12px calc(12px + var(--safe-bottom)); } }
 
-  /* ===== ШАПКА ===== */
-  .header {
-    display: flex; justify-content: space-between;
-    align-items: flex-start; flex-wrap: wrap; gap: 12px;
-    margin-bottom: 20px;
-  }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
   .header .brand h1 { font-size: 24px; margin-bottom: 4px; }
   .header .brand h1 .dab {
     background: linear-gradient(90deg, var(--pink), var(--accent));
@@ -38,40 +48,28 @@
   .header .brand .subtitle { color: var(--muted); font-size: 13px; }
   .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-  /* ===== КНОПКИ ===== */
   .btn {
     background: var(--accent); color: white; border: none;
     padding: 9px 16px; border-radius: 8px; cursor: pointer;
     font-size: 13px; font-weight: 600; transition: all .2s;
     display: inline-flex; align-items: center; gap: 6px;
-    font-family: inherit;
+    font-family: inherit; touch-action: manipulation;
   }
-  .btn:hover { opacity: .85; transform: translateY(-1px); }
-  .btn:active { transform: translateY(0); }
+  .btn:hover { opacity: .85; }
+  .btn:active { transform: scale(.97); }
   .btn.secondary { background: var(--panel2); color: var(--text); }
-  .btn.secondary:hover { background: var(--border); }
   .btn.pink { background: var(--pink); }
   .btn.green { background: var(--green); }
-  .btn small { opacity: .8; font-weight: 400; }
+  .btn.install { background: linear-gradient(135deg, var(--pink), var(--accent)); display: none; }
+  .btn.install.show { display: inline-flex; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(236,72,153,.7); } 50% { box-shadow: 0 0 0 8px rgba(236,72,153,0); } }
 
-  /* ===== KPI ===== */
-  .kpi-row {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px; margin-bottom: 20px;
-  }
-  .kpi {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px 16px;
-    position: relative; overflow: hidden;
-  }
-  .kpi::before {
-    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-    width: 4px; background: var(--blue);
-  }
+  .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .kpi { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; position: relative; overflow: hidden; }
+  .kpi::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--blue); }
   .kpi.green::before { background: var(--green); }
   .kpi.yellow::before { background: var(--yellow); }
   .kpi.red::before { background: var(--red); }
-  .kpi.pink::before { background: var(--pink); }
   .kpi .label { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
   .kpi .value { font-size: 24px; font-weight: 700; }
   .kpi .unit { font-size: 12px; color: var(--muted); font-weight: 400; }
@@ -80,262 +78,122 @@
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
   @media (max-width: 1000px) { .grid { grid-template-columns: 1fr; } }
 
-  .card {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px;
-  }
-  .card h2 {
-    font-size: 15px; margin-bottom: 14px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .card h2 .badge {
-    font-size: 11px; background: var(--panel2); color: var(--muted);
-    padding: 2px 8px; border-radius: 20px; font-weight: 400;
-  }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card h2 { font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card h2 .badge { font-size: 11px; background: var(--panel2); color: var(--muted); padding: 2px 8px; border-radius: 20px; font-weight: 400; }
 
-  /* ===== ФАКТОРЫ ===== */
   .factor-list { display: flex; flex-direction: column; gap: 8px; }
-  .factor {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 10px; background: var(--panel2); border-radius: 8px; font-size: 13px;
-  }
+  .factor { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: var(--panel2); border-radius: 8px; font-size: 13px; }
   .factor .left { display: flex; align-items: center; gap: 10px; }
   .factor .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .dot.green { background: var(--green); box-shadow: 0 0 8px var(--green); }
   .dot.yellow { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
   .dot.red { background: var(--red); box-shadow: 0 0 8px var(--red); }
   .factor .coef { font-weight: 700; font-family: monospace; }
-  .coef.green { color: var(--green); }
-  .coef.yellow { color: var(--yellow); }
-  .coef.red { color: var(--red); }
+  .coef.green { color: var(--green); } .coef.yellow { color: var(--yellow); } .coef.red { color: var(--red); }
 
-  .factor-total {
-    margin-top: 12px; padding: 12px;
-    background: linear-gradient(135deg, #1e3a8a, #4c1d95);
-    border-radius: 8px; display: flex; justify-content: space-between; align-items: center;
-  }
+  .factor-total { margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #1e3a8a, #4c1d95); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
   .factor-total .big { font-size: 22px; font-weight: 700; }
 
-  /* ===== ГРАФИК ===== */
   .chart-wrap { margin-bottom: 26px; }
-  .chart-bar {
-    display: flex; align-items: flex-end; gap: 4px;
-    height: 140px; padding-top: 10px;
-  }
-  .bar {
-    flex: 1; background: var(--panel2); border-radius: 4px 4px 0 0;
-    position: relative; min-height: 4px; transition: all .2s;
-  }
-  .bar:hover { filter: brightness(1.3); }
-  .bar-label {
-    position: absolute; bottom: -18px; left: 50%;
-    transform: translateX(-50%); font-size: 9px;
-    color: var(--muted); white-space: nowrap;
-  }
+  .chart-bar { display: flex; align-items: flex-end; gap: 4px; height: 140px; padding-top: 10px; }
+  .bar { flex: 1; background: var(--panel2); border-radius: 4px 4px 0 0; position: relative; min-height: 4px; transition: all .2s; }
+  .bar-label { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 9px; color: var(--muted); white-space: nowrap; }
   .legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
   .legend span { display: flex; align-items: center; gap: 6px; }
   .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
   .hint { font-size: 12px; color: var(--muted); margin-top: 8px; font-style: italic; }
 
-  /* ===== ТЕПЛОВАЯ КАРТА ===== */
-  .heatmap-legend {
-    display: flex; gap: 20px; flex-wrap: wrap;
-    margin-bottom: 16px; padding: 12px;
-    background: var(--panel2); border-radius: 8px; font-size: 12px;
-  }
+  .heatmap-legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px; background: var(--panel2); border-radius: 8px; font-size: 12px; }
   .heatmap-legend .lg-item { display: flex; align-items: center; gap: 8px; }
-  .heatmap-legend .swatch {
-    width: 24px; height: 24px; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 700; color: #0f172a;
-  }
+  .heatmap-legend .swatch { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #0f172a; }
   .heatmap-table { width: 100%; border-collapse: separate; border-spacing: 4px; }
-  .heatmap-table th {
-    font-size: 11px; color: var(--muted); font-weight: 600;
-    padding: 6px 2px; text-align: center;
-  }
-  .heatmap-table th.day-col {
-    text-align: left; padding-left: 8px; min-width: 110px;
-  }
-  .heatmap-table th.day-col .today-tag {
-    display: inline-block; font-size: 9px; background: var(--pink);
-    color: white; padding: 1px 6px; border-radius: 10px; margin-left: 4px;
-  }
+  .heatmap-table th { font-size: 11px; color: var(--muted); font-weight: 600; padding: 6px 2px; text-align: center; }
+  .heatmap-table th.day-col { text-align: left; padding-left: 8px; min-width: 110px; }
+  .heatmap-table th.day-col .today-tag { display: inline-block; font-size: 9px; background: var(--pink); color: white; padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
   .heatmap-table td { padding: 0; text-align: center; }
-  .hm-cell {
-    height: 42px; border-radius: 6px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    font-weight: 700; font-size: 13px;
-    cursor: pointer; transition: transform .15s, box-shadow .15s;
-    color: #0f172a; line-height: 1.1;
-  }
-  .hm-cell:hover {
-    transform: scale(1.07); box-shadow: 0 0 0 2px white;
-    z-index: 2; position: relative;
-  }
+  .hm-cell { height: 42px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; cursor: pointer; transition: transform .15s; color: #0f172a; line-height: 1.1; }
+  .hm-cell:active { transform: scale(.95); }
   .hm-cell .hm-sub { font-size: 9px; font-weight: 500; opacity: 0.8; }
-  .hm-day-row td:first-child {
-    text-align: left; padding: 6px 8px;
-    background: var(--panel2); border-radius: 6px;
-    font-weight: 600; font-size: 13px;
-  }
-  .hm-day-row .day-meta {
-    font-size: 10px; color: var(--muted); font-weight: 400;
-    display: block; margin-top: 2px;
-  }
+  .hm-day-row td:first-child { text-align: left; padding: 6px 8px; background: var(--panel2); border-radius: 6px; font-weight: 600; font-size: 13px; }
+  .hm-day-row .day-meta { font-size: 10px; color: var(--muted); font-weight: 400; display: block; margin-top: 2px; }
 
-  /* ===== ТАБЛИЦА ПЕРСОНАЛА ===== */
   .staff-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .staff-table th {
-    text-align: left; padding: 8px 6px; color: var(--muted);
-    font-weight: 600; font-size: 11px; text-transform: uppercase;
-    border-bottom: 1px solid var(--border);
-  }
+  .staff-table th { text-align: left; padding: 8px 6px; color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
   .staff-table td { padding: 9px 6px; border-bottom: 1px solid var(--border); }
   .staff-table tr:last-child td { border-bottom: none; }
   .staff-table .shift-1 { color: var(--blue); font-weight: 600; }
   .staff-table .shift-2 { color: var(--accent); font-weight: 600; }
   .staff-table .shift-both { color: var(--pink); font-weight: 600; }
-  .status {
-    display: inline-block; padding: 2px 10px;
-    border-radius: 20px; font-size: 11px; font-weight: 600;
-  }
+  .status { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
   .status.ok { background: rgba(34,197,94,.15); color: var(--green); }
   .status.warn { background: rgba(234,179,8,.15); color: var(--yellow); }
   .status.bad { background: rgba(239,68,68,.15); color: var(--red); }
-  .summary-row {
-    margin-top: 12px; padding: 12px; background: var(--panel2);
-    border-radius: 8px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 13px;
-  }
+  .summary-row { margin-top: 12px; padding: 12px; background: var(--panel2); border-radius: 8px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 13px; }
   .summary-row .item { display: flex; gap: 6px; }
 
-  /* ===== ВЫРУЧКА ===== */
-  .revenue-panel {
-    background: linear-gradient(135deg, #1e293b, #2d1b4e);
-    border: 1px solid var(--pink);
-  }
+  .revenue-panel { background: linear-gradient(135deg, #1e293b, #2d1b4e); border: 1px solid var(--pink); }
   .revenue-panel h2 { color: var(--pink); }
-  .rev-inputs {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px; margin-bottom: 16px;
-  }
-  .rev-field label {
-    display: block; font-size: 11px; color: var(--muted);
-    margin-bottom: 4px; text-transform: uppercase;
-  }
-  .rev-field input {
-    width: 100%; background: var(--panel2);
-    border: 1px solid var(--border); color: var(--text);
-    padding: 10px 12px; border-radius: 8px;
-    font-size: 15px; font-weight: 600; font-family: inherit;
-  }
-  .rev-field input:focus {
-    outline: none; border-color: var(--pink);
-    box-shadow: 0 0 0 2px rgba(236,72,153,.25);
-  }
-  .rev-period {
-    display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;
-    align-items: center;
-  }
-  .rev-period button {
-    background: var(--panel2); border: 1px solid var(--border);
-    color: var(--text); padding: 6px 14px; border-radius: 20px;
-    cursor: pointer; font-size: 12px; font-weight: 600;
-    transition: all .15s; font-family: inherit;
-  }
-  .rev-period button.active {
-    background: var(--pink); border-color: var(--pink); color: white;
-  }
-  .rev-stats {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 10px; margin-bottom: 16px;
-  }
-  .rev-stat {
-    background: var(--panel2); padding: 12px;
-    border-radius: 8px; border-left: 3px solid var(--pink);
-  }
+  .rev-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .rev-field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; }
+  .rev-field input { width: 100%; background: var(--panel2); border: 1px solid var(--border); color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 15px; font-weight: 600; font-family: inherit; }
+  .rev-field input:focus { outline: none; border-color: var(--pink); box-shadow: 0 0 0 2px rgba(236,72,153,.25); }
+  .rev-period { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .rev-period button { background: var(--panel2); border: 1px solid var(--border); color: var(--text); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all .15s; font-family: inherit; }
+  .rev-period button.active { background: var(--pink); border-color: var(--pink); color: white; }
+  .rev-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
+  .rev-stat { background: var(--panel2); padding: 12px; border-radius: 8px; border-left: 3px solid var(--pink); }
   .rev-stat .lbl { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
   .rev-stat .val { font-size: 18px; font-weight: 700; }
   .rev-stat .sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
   .rev-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .rev-table th {
-    text-align: left; padding: 8px 6px; color: var(--muted);
-    font-size: 10px; text-transform: uppercase;
-    border-bottom: 1px solid var(--border);
-  }
+  .rev-table th { text-align: left; padding: 8px 6px; color: var(--muted); font-size: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
   .rev-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); }
   .rev-table tr:last-child td { border-bottom: none; }
   .rev-table .num { font-family: monospace; font-weight: 600; }
   .rev-table .delta-up { color: var(--green); }
   .rev-table .delta-down { color: var(--red); }
-  .rev-table .dab-badge {
-    display: inline-block; padding: 2px 8px;
-    border-radius: 10px; font-size: 10px; font-weight: 600;
-    background: rgba(236,72,153,.15); color: var(--pink);
-  }
+  .rev-table .dab-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; background: rgba(236,72,153,.15); color: var(--pink); }
 
-  /* ===== УПРАВЛЕНИЕ ===== */
-  .date-picker {
-    display: flex; gap: 10px; align-items: center;
-    margin-bottom: 16px; flex-wrap: wrap;
-    padding: 12px; background: var(--panel); border-radius: 10px;
-    border: 1px solid var(--border);
-  }
+  .date-picker { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; padding: 12px; background: var(--panel); border-radius: 10px; border: 1px solid var(--border); }
   .date-picker label { color: var(--muted); font-size: 13px; }
-  .date-picker input {
-    background: var(--panel2); border: 1px solid var(--border);
-    color: var(--text); padding: 8px 12px;
-    border-radius: 8px; font-size: 13px; font-family: inherit;
-  }
+  .date-picker input { background: var(--panel2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 13px; font-family: inherit; }
 
-  /* ===== TOAST ===== */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--green); color: #0f172a;
-    padding: 12px 20px; border-radius: 10px;
-    font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.4);
-    opacity: 0; transform: translateY(20px);
-    transition: all .3s; pointer-events: none; z-index: 9999;
-  }
+  .toast { position: fixed; bottom: calc(24px + var(--safe-bottom)); right: 24px; background: var(--green); color: #0f172a; padding: 12px 20px; border-radius: 10px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.4); opacity: 0; transform: translateY(20px); transition: all .3s; pointer-events: none; z-index: 9999; max-width: calc(100vw - 48px); }
   .toast.show { opacity: 1; transform: translateY(0); }
   .toast.error { background: var(--red); color: white; }
 
-  /* ===== ПЕЧАТЬ / PDF ===== */
-  @media print {
-    body { background: white; color: black; padding: 0; }
-    .header-actions, .date-picker, .toast { display: none !important; }
-    .card, .kpi { border: 1px solid #ccc; break-inside: avoid; }
-    .kpi { background: #f5f5f5 !important; }
-    .factor-total { background: #ddd !important; color: black !important; }
-  }
+  .offline-banner { display: none; position: fixed; top: var(--safe-top); left: 0; right: 0; background: var(--yellow); color: #0f172a; text-align: center; padding: 6px; font-size: 12px; font-weight: 600; z-index: 9998; }
+  .offline-banner.show { display: block; }
 
-  /* ===== MOBILE ===== */
+  @media print { body { background: white; color: black; padding: 0; } .header-actions, .date-picker, .toast, .btn.install { display: none !important; } .card, .kpi { border: 1px solid #ccc; break-inside: avoid; } .kpi { background: #f5f5f5 !important; } .factor-total { background: #ddd !important; color: black !important; } }
+
   @media (max-width: 640px) {
     .header h1 { font-size: 20px; }
     .kpi-row { grid-template-columns: 1fr 1fr; }
     .kpi .value { font-size: 20px; }
-    .heatmap-table { font-size: 11px; }
     .hm-cell { height: 36px; font-size: 11px; }
     .summary-row { flex-direction: column; gap: 6px; }
+    .btn { padding: 10px 14px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ШАПКА -->
+<div class="offline-banner" id="offlineBanner">📡 Нет подключения — работаем офлайн</div>
+
 <div class="header">
   <div class="brand">
     <h1><span class="dab">DAB</span> · Дашборд нагрузки</h1>
-    <p class="subtitle">г. Новокузнецк · смены 10:00–17:30 / 14:00–22:00 · аналитика выручки и персонала</p>
+    <p class="subtitle">г. Новокузнецк · смены 10:00–17:30 / 14:00–22:00</p>
   </div>
   <div class="header-actions">
-    <button class="btn secondary" onclick="window.print()">🖨 Печать / PDF</button>
-    <button class="btn green" onclick="exportCSV()">📥 Экспорт CSV</button>
+    <button class="btn install" id="installBtn" onclick="installPWA()">📱 Установить на телефон</button>
+    <button class="btn secondary" onclick="window.print()">🖨 PDF</button>
+    <button class="btn green" onclick="exportCSV()">📥 CSV</button>
   </div>
 </div>
 
-<!-- УПРАВЛЕНИЕ -->
 <div class="date-picker">
   <label>📅 Дата:</label>
   <input type="date" id="dateInput">
@@ -343,10 +201,8 @@
   <button class="btn secondary" onclick="randomDay()">🎲 Случайный</button>
 </div>
 
-<!-- KPI -->
 <div class="kpi-row" id="kpiRow"></div>
 
-<!-- ФАКТОРЫ + ГРАФИК -->
 <div class="grid">
   <div class="card">
     <h2>🚦 Факторный анализ дня <span class="badge" id="dateBadge"></span></h2>
@@ -368,7 +224,6 @@
   </div>
 </div>
 
-<!-- ТЕПЛОВАЯ КАРТА -->
 <div class="card" style="margin-bottom:16px;">
   <h2>🔥 Тепловая карта загрузки · неделя <span class="badge">клик по ячейке — пересчёт</span></h2>
   <div class="heatmap-legend">
@@ -384,7 +239,6 @@
   <p class="hint">В ячейке: посетителей/час (крупно) и % от пика дня (мелко)</p>
 </div>
 
-<!-- ПЕРСОНАЛ -->
 <div class="card" style="margin-bottom:16px;">
   <h2>👥 Рекомендация по персоналу · 2 смены</h2>
   <div style="overflow-x:auto;">
@@ -399,24 +253,14 @@
   <div class="summary-row" id="staffSummary"></div>
 </div>
 
-<!-- ВЫРУЧКА -->
 <div class="card revenue-panel">
   <h2>💵 Аналитика выручки <span class="badge">данные хранятся в браузере</span></h2>
   <p class="hint" style="margin-bottom:12px;">Введите выручку за прошлый день — данные сохраняются локально и используются в аналитике.</p>
 
   <div class="rev-inputs">
-    <div class="rev-field">
-      <label>Дата</label>
-      <input type="date" id="revDate">
-    </div>
-    <div class="rev-field">
-      <label>Выручка, ₽</label>
-      <input type="number" id="revAmount" placeholder="85000" min="0" step="1000">
-    </div>
-    <div class="rev-field">
-      <label>Чеков, шт (опц.)</label>
-      <input type="number" id="revChecks" placeholder="42" min="0">
-    </div>
+    <div class="rev-field"><label>Дата</label><input type="date" id="revDate"></div>
+    <div class="rev-field"><label>Выручка, ₽</label><input type="number" id="revAmount" placeholder="85000" min="0" step="1000"></div>
+    <div class="rev-field"><label>Чеков, шт (опц.)</label><input type="number" id="revChecks" placeholder="42" min="0"></div>
     <div class="rev-field" style="display:flex;align-items:flex-end;">
       <button class="btn pink" onclick="saveRevenue()" style="width:100%;">💾 Сохранить</button>
     </div>
@@ -431,12 +275,9 @@
   </div>
 
   <div class="rev-stats" id="revStats"></div>
-  <div style="overflow-x:auto;">
-    <table class="rev-table" id="revTable"></table>
-  </div>
+  <div style="overflow-x:auto;"><table class="rev-table" id="revTable"></table></div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -462,25 +303,19 @@ function getShift(hour) {
 }
 
 /* ===================== МОДЕЛЬ ===================== */
-function isSalaryDay(d) {
-  const day = d.getDate();
-  return (day >= 5 && day <= 10) || (day >= 20 && day <= 25);
-}
+function isSalaryDay(d) { const day = d.getDate(); return (day >= 5 && day <= 10) || (day >= 20 && day <= 25); }
 function getWeather(d) {
   const seed = (d.getDate() + d.getMonth()*31) % 5;
   const variants = [
-    {icon:'☀️', text:'Солнечно, +22°C', coef:1.2,  cls:'green'},
-    {icon:'⛅', text:'Облачно, +15°C',  coef:1.0,  cls:'yellow'},
-    {icon:'🌧️', text:'Дождь, +10°C',   coef:0.78, cls:'red'},
-    {icon:'❄️', text:'Снег, −5°C',      coef:0.7,  cls:'red'},
-    {icon:'🌤️', text:'Ясно, +18°C',     coef:1.15, cls:'green'},
+    {icon:'☀️', text:'Солнечно, +22°C', coef:1.2, cls:'green'},
+    {icon:'⛅', text:'Облачно, +15°C', coef:1.0, cls:'yellow'},
+    {icon:'🌧️', text:'Дождь, +10°C', coef:0.78, cls:'red'},
+    {icon:'❄️', text:'Снег, −5°C', coef:0.7, cls:'red'},
+    {icon:'🌤️', text:'Ясно, +18°C', coef:1.15, cls:'green'},
   ];
   return variants[seed];
 }
-function isSupplyDay(d) {
-  const dayOfYear = Math.floor((d - new Date(d.getFullYear(),0,0)) / 86400000);
-  return dayOfYear % 14 === 0;
-}
+function isSupplyDay(d) { const dayOfYear = Math.floor((d - new Date(d.getFullYear(),0,0)) / 86400000); return dayOfYear % 14 === 0; }
 function getSaleFactor(d) {
   const day = d.getDate();
   if (day === 15) return {text:'СТАРТ распродажи', coef:1.8, cls:'red'};
@@ -493,42 +328,29 @@ function calculateDay(d) {
   const dow = d.getDay();
   const mmdd = String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   const factors = [];
-
   const dowCoef = DOW_COEF[dow];
   factors.push({icon:'📆', text:DOW_FULL[dow], coef:dowCoef, cls: dowCoef > 1.2 ? 'green' : 'yellow'});
-
   if (HOLIDAYS[mmdd]) factors.push({icon:'🎉', text:'Праздничный день', coef:HOLIDAYS[mmdd], cls:'red'});
   if (isSalaryDay(d)) factors.push({icon:'💰', text:'Зарплатный период', coef:1.3, cls:'green'});
   else factors.push({icon:'💰', text:'Обычный период', coef:1.0, cls:'yellow'});
-
   const w = getWeather(d);
   factors.push({icon:w.icon, text:`Погода: ${w.text}`, coef:w.coef, cls:w.cls});
-
-  if (isSupplyDay(d)) factors.push({icon:'📦', text:'Поставка (новая коллекция)', coef:1.15, cls:'green'});
+  if (isSupplyDay(d)) factors.push({icon:'📦', text:'Поставка', coef:1.15, cls:'green'});
   else factors.push({icon:'📦', text:'Без поставки', coef:1.0, cls:'yellow'});
-
   const s = getSaleFactor(d);
   factors.push({icon:'🏷️', text:s.text, coef:s.coef, cls:s.cls});
-
   const totalCoef = factors.reduce((a,f)=> a*f.coef, 1);
   const visitors = Math.round(BASE_TRAFFIC * totalCoef);
   const hourly = HOUR_PROFILE.map(p => Math.max(1, Math.round(visitors * p)));
-
   return { factors, totalCoef, visitors, hourly };
 }
 
 /* ===================== РЕНДЕР ===================== */
 function renderFactors(data, date) {
-  document.getElementById('dateBadge').textContent =
-    date.toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});
-
+  document.getElementById('dateBadge').textContent = date.toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});
   document.getElementById('factorList').innerHTML = data.factors.map(f => `
-    <div class="factor">
-      <div class="left"><span class="dot ${f.cls}"></span><span>${f.icon} ${f.text}</span></div>
-      <span class="coef ${f.cls}">×${f.coef.toFixed(2)}</span>
-    </div>
-  `).join('');
-
+    <div class="factor"><div class="left"><span class="dot ${f.cls}"></span><span>${f.icon} ${f.text}</span></div>
+    <span class="coef ${f.cls}">×${f.coef.toFixed(2)}</span></div>`).join('');
   document.getElementById('totalVisitors').textContent = data.visitors;
 }
 
@@ -536,26 +358,18 @@ function renderKPI(data) {
   const peak = Math.max(...data.hourly);
   const peakHour = HOURS[data.hourly.indexOf(peak)];
   let maxStaff = 0, totalStaffHours = 0;
-  data.hourly.forEach(v => {
-    const s = Math.ceil(v * SERVICE_TIME_MIN / SHIFT_MIN / EFFECT);
-    if (s > maxStaff) maxStaff = s;
-    totalStaffHours += s;
-  });
+  data.hourly.forEach(v => { const s = Math.ceil(v * SERVICE_TIME_MIN / SHIFT_MIN / EFFECT); if (s > maxStaff) maxStaff = s; totalStaffHours += s; });
   const avg = Math.round(totalStaffHours / HOURS.length);
-
   const kpis = [
     {label:'Прогноз посетителей', value:data.visitors, unit:'чел.', cls:'', delta:'за день'},
     {label:'Пиковый час', value:peakHour+':00', unit:'', cls:'yellow', delta:`${peak} чел. в пик`},
-    {label:'Нужно персонала (макс)', value:maxStaff, unit:'чел.', cls:'red', delta:'в пик нагрузки'},
+    {label:'Нужно персонала', value:maxStaff, unit:'чел.', cls:'red', delta:'в пик'},
     {label:'Среднее за смену', value:avg, unit:'чел.', cls:'green', delta:'по часам'},
   ];
   document.getElementById('kpiRow').innerHTML = kpis.map(k => `
-    <div class="kpi ${k.cls}">
-      <div class="label">${k.label}</div>
-      <div class="value">${k.value} <span class="unit">${k.unit}</span></div>
-      <div class="delta">${k.delta}</div>
-    </div>
-  `).join('');
+    <div class="kpi ${k.cls}"><div class="label">${k.label}</div>
+    <div class="value">${k.value} <span class="unit">${k.unit}</span></div>
+    <div class="delta">${k.delta}</div></div>`).join('');
 }
 
 function renderHourlyChart(data) {
@@ -566,8 +380,7 @@ function renderHourlyChart(data) {
     if (v / max > 0.7) color = '#ef4444';
     else if (v / max > 0.4) color = '#eab308';
     const shift = getShift(HOURS[i]);
-    return `<div class="bar" style="height:${h}%;background:${color}" title="${HOURS[i]}:00 — ${v} чел. (${shift.name})">
-      <span class="bar-label">${HOURS[i]}</span></div>`;
+    return `<div class="bar" style="height:${h}%;background:${color}" title="${HOURS[i]}:00 — ${v} чел. (${shift.name})"><span class="bar-label">${HOURS[i]}</span></div>`;
   }).join('');
 }
 
@@ -576,35 +389,23 @@ function renderHeatmap(date) {
   const dow = start.getDay();
   const offset = (dow === 0) ? -6 : 1 - dow;
   start.setDate(start.getDate() + offset);
-
   const week = [];
-  for (let i = 0; i < 7; i++) {
-    const cur = new Date(start);
-    cur.setDate(start.getDate() + i);
-    week.push({date:cur, data:calculateDay(cur)});
-  }
-
+  for (let i = 0; i < 7; i++) { const cur = new Date(start); cur.setDate(start.getDate() + i); week.push({date:cur, data:calculateDay(cur)}); }
   const weekMax = Math.max(...week.flatMap(w => w.data.hourly));
   const todayStr = new Date().toDateString();
   const selStr = date.toDateString();
-
   let html = '<thead><tr><th class="day-col">День</th>';
   HOURS.forEach(h => html += `<th>${h}</th>`);
   html += '<th>Итого</th></tr></thead><tbody>';
-
   week.forEach(({date:cur, data}) => {
     const isToday = cur.toDateString() === todayStr;
     const isSelected = cur.toDateString() === selStr;
     const dayTotal = data.hourly.reduce((a,b)=>a+b, 0);
     const dayMax = Math.max(...data.hourly);
-
-    html += `<tr class="hm-day-row"><td>
-      <b>${DOW_NAMES[cur.getDay()]}</b> ${cur.getDate()}.${cur.getMonth()+1}
+    html += `<tr class="hm-day-row"><td><b>${DOW_NAMES[cur.getDay()]}</b> ${cur.getDate()}.${cur.getMonth()+1}
       ${isToday ? '<span class="today-tag">сегодня</span>' : ''}
       ${isSelected && !isToday ? '<span class="today-tag" style="background:var(--accent)">выбрано</span>' : ''}
-      <span class="day-meta">${DOW_FULL[cur.getDay()]}</span>
-    </td>`;
-
+      <span class="day-meta">${DOW_FULL[cur.getDay()]}</span></td>`;
     data.hourly.forEach((v, i) => {
       const ratio = v / dayMax;
       let bg, sub;
@@ -613,136 +414,84 @@ function renderHeatmap(date) {
       else if (ratio > 0.6) { bg = '#f97316'; sub = Math.round(ratio*100)+'%'; }
       else if (ratio > 0.3) { bg = '#eab308'; sub = Math.round(ratio*100)+'%'; }
       else { bg = '#22c55e'; sub = Math.round(ratio*100)+'%'; }
-
       const color = bg === '#7f1d1d' ? '#fff' : '#0f172a';
       const shift = getShift(HOURS[i]);
-      html += `<td><div class="hm-cell" style="background:${bg};color:${color}"
-        title="${DOW_FULL[cur.getDay()]} ${cur.getDate()}.${cur.getMonth()+1} · ${HOURS[i]}:00 — ${v} чел. · ${shift.name}"
-        onclick="selectDate('${cur.toISOString().split('T')[0]}')">
-        ${v}<span class="hm-sub">${sub}</span></div></td>`;
+      html += `<td><div class="hm-cell" style="background:${bg};color:${color}" title="${DOW_FULL[cur.getDay()]} ${cur.getDate()}.${cur.getMonth()+1} · ${HOURS[i]}:00 — ${v} чел. · ${shift.name}" onclick="selectDate('${cur.toISOString().split('T')[0]}')">${v}<span class="hm-sub">${sub}</span></div></td>`;
     });
-
-    html += `<td><div style="font-weight:700;color:var(--accent);font-size:13px;">${dayTotal}</div>
-      <div style="font-size:10px;color:var(--muted);">чел./день</div></td></tr>`;
+    html += `<td><div style="font-weight:700;color:var(--accent);font-size:13px;">${dayTotal}</div><div style="font-size:10px;color:var(--muted);">чел./день</div></td></tr>`;
   });
-
-  html += '</tbody>';
-  document.getElementById('heatmap').innerHTML = html;
+  document.getElementById('heatmap').innerHTML = html + '</tbody>';
 }
 
 function renderStaffTable(data) {
   function availableByHour(hour) {
     let s1 = (hour >= 10 && hour <= 17) ? 3 : 0;
     let s2 = (hour >= 14 && hour <= 21) ? 3 : 0;
-    if (hour === 10) s1 = 2;
-    if (hour === 21) s2 = 2;
+    if (hour === 10) s1 = 2; if (hour === 21) s2 = 2;
     return s1 + s2;
   }
-
-  let totalNeeded = 0, totalAvail = 0, deficit = 0, hoursWithDeficit = 0;
-  let rows = '';
-
+  let totalNeeded = 0, totalAvail = 0, deficit = 0, hoursWithDeficit = 0, rows = '';
   data.hourly.forEach((v, i) => {
     const hour = HOURS[i];
     const need = Math.ceil(v * SERVICE_TIME_MIN / SHIFT_MIN / EFFECT);
     const avail = availableByHour(hour);
     const diff = need - avail;
-    totalNeeded += need;
-    totalAvail += avail;
-
+    totalNeeded += need; totalAvail += avail;
     let status, statusCls;
     if (diff <= 0) { status = '✅ OK'; statusCls = 'ok'; }
     else if (diff === 1) { status = '⚠️ +1'; statusCls = 'warn'; deficit += 1; hoursWithDeficit++; }
     else { status = `🔴 +${diff}`; statusCls = 'bad'; deficit += diff; hoursWithDeficit++; }
-
     const shift = getShift(hour);
-    rows += `<tr>
-      <td>${hour}:00–${hour+1}:00</td>
-      <td><span class="${shift.cls}">${shift.name}</span></td>
-      <td>${v}</td>
-      <td>${need}</td>
-      <td>${avail}</td>
-      <td>${diff > 0 ? '+' + diff : '—'}</td>
-      <td><span class="status ${statusCls}">${status}</span></td>
-    </tr>`;
+    rows += `<tr><td>${hour}:00–${hour+1}:00</td><td><span class="${shift.cls}">${shift.name}</span></td>
+      <td>${v}</td><td>${need}</td><td>${avail}</td><td>${diff > 0 ? '+' + diff : '—'}</td>
+      <td><span class="status ${statusCls}">${status}</span></td></tr>`;
   });
-
   document.getElementById('staffTable').innerHTML = rows;
-
   const extraStaff = deficit > 0 ? Math.ceil(deficit / 4) : 0;
   document.getElementById('staffSummary').innerHTML = `
     <div class="item">📊 Нужно чел.-часов: <b>${totalNeeded}</b></div>
     <div class="item">👥 В наличии: <b>${totalAvail}</b></div>
     <div class="item">⚠️ Дефицит: <b style="color:${deficit>0?'var(--red)':'var(--green)'}">${deficit > 0 ? '+'+deficit : '0'}</b></div>
-    <div class="item">🕐 Часов с нехваткой: <b>${hoursWithDeficit}</b></div>
-    <div class="item">💡 <b>${deficit > 0 ? 'Вызвать ' + extraStaff + ' доп. сотрудника(ов) на 14:00–17:30' : 'Персонала достаточно'}</b></div>
-  `;
+    <div class="item">💡 <b>${deficit > 0 ? 'Вызвать ' + extraStaff + ' доп. на 14:00–17:30' : 'Персонала достаточно'}</b></div>`;
 }
 
 /* ===================== ВЫРУЧКА ===================== */
 const REV_KEY = 'dab_revenue_v1';
 let revPeriod = 7;
-
-function loadRevenue() {
-  try { return JSON.parse(localStorage.getItem(REV_KEY)) || {}; }
-  catch(e) { return {}; }
-}
-
+function loadRevenue() { try { return JSON.parse(localStorage.getItem(REV_KEY)) || {}; } catch(e) { return {}; } }
 function saveRevenue() {
   const dateVal = document.getElementById('revDate').value;
   const amount = parseFloat(document.getElementById('revAmount').value);
   const checks = parseInt(document.getElementById('revChecks').value) || 0;
-
   if (!dateVal) return showToast('Укажите дату', true);
   if (!amount || amount <= 0) return showToast('Сумма должна быть больше 0', true);
-
-  const all = loadRevenue();
-  all[dateVal] = { amount, checks };
+  const all = loadRevenue(); all[dateVal] = { amount, checks };
   localStorage.setItem(REV_KEY, JSON.stringify(all));
-
-  document.getElementById('revAmount').value = '';
-  document.getElementById('revChecks').value = '';
-  showToast('✅ Выручка сохранена');
-  renderRevenue();
+  document.getElementById('revAmount').value = ''; document.getElementById('revChecks').value = '';
+  showToast('✅ Выручка сохранена'); renderRevenue();
 }
-
 function clearRevenue() {
-  if (!confirm('Удалить все сохранённые данные о выручке?')) return;
-  localStorage.removeItem(REV_KEY);
-  renderRevenue();
-  showToast('Данные очищены');
+  if (!confirm('Удалить все данные о выручке?')) return;
+  localStorage.removeItem(REV_KEY); renderRevenue(); showToast('Данные очищены');
 }
-
 function setPeriod(p) {
   revPeriod = p;
-  document.querySelectorAll('.rev-period button[data-period]').forEach(b => {
-    b.classList.toggle('active', parseInt(b.dataset.period) === p);
-  });
+  document.querySelectorAll('.rev-period button[data-period]').forEach(b => b.classList.toggle('active', parseInt(b.dataset.period) === p));
   renderRevenue();
 }
-
-function formatRub(n) {
-  return Math.round(n).toLocaleString('ru-RU') + ' ₽';
-}
-
+function formatRub(n) { return Math.round(n).toLocaleString('ru-RU') + ' ₽'; }
 function renderRevenue() {
   const all = loadRevenue();
-  const entries = Object.entries(all)
-    .map(([date, v]) => ({ date, ...v }))
-    .sort((a,b) => b.date.localeCompare(a.date));
-
+  const entries = Object.entries(all).map(([date, v]) => ({ date, ...v })).sort((a,b) => b.date.localeCompare(a.date));
   let filtered = entries;
   if (revPeriod > 0) {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - revPeriod);
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - revPeriod);
     const cutoffStr = cutoff.toISOString().split('T')[0];
     filtered = entries.filter(e => e.date >= cutoffStr);
   }
-
   const statsEl = document.getElementById('revStats');
   if (filtered.length === 0) {
-    statsEl.innerHTML = `<div class="rev-stat" style="grid-column:1/-1;text-align:center;color:var(--muted);">
-      Нет данных за выбранный период. Введите выручку выше 👆</div>`;
+    statsEl.innerHTML = `<div class="rev-stat" style="grid-column:1/-1;text-align:center;color:var(--muted);">Нет данных за выбранный период. Введите выручку выше 👆</div>`;
   } else {
     const total = filtered.reduce((s,e) => s + e.amount, 0);
     const avg = total / filtered.length;
@@ -752,28 +501,18 @@ function renderRevenue() {
     const avgCheck = totalChecks > 0 ? total / totalChecks : 0;
     const best = filtered.find(e => e.amount === max);
     const worst = filtered.find(e => e.amount === min);
-
     statsEl.innerHTML = `
-      <div class="rev-stat"><div class="lbl">Всего за период</div><div class="val">${formatRub(total)}</div><div class="sub">${filtered.length} дн.</div></div>
+      <div class="rev-stat"><div class="lbl">Всего</div><div class="val">${formatRub(total)}</div><div class="sub">${filtered.length} дн.</div></div>
       <div class="rev-stat"><div class="lbl">Средняя/день</div><div class="val">${formatRub(avg)}</div><div class="sub">по ${filtered.length} дням</div></div>
       <div class="rev-stat"><div class="lbl">Лучший день</div><div class="val" style="color:var(--green)">${formatRub(max)}</div><div class="sub">${best.date}</div></div>
       <div class="rev-stat"><div class="lbl">Слабый день</div><div class="val" style="color:var(--red)">${formatRub(min)}</div><div class="sub">${worst.date}</div></div>
-      <div class="rev-stat"><div class="lbl">Средний чек</div><div class="val">${avgCheck > 0 ? formatRub(avgCheck) : '—'}</div><div class="sub">${totalChecks > 0 ? totalChecks + ' чеков' : 'нет данных'}</div></div>
-    `;
+      <div class="rev-stat"><div class="lbl">Средний чек</div><div class="val">${avgCheck > 0 ? formatRub(avgCheck) : '—'}</div><div class="sub">${totalChecks > 0 ? totalChecks + ' чеков' : 'нет данных'}</div></div>`;
   }
-
   const table = document.getElementById('revTable');
   if (entries.length === 0) { table.innerHTML = ''; return; }
-
   const sortedAsc = [...entries].sort((a,b) => a.date.localeCompare(b.date));
-  const prevMap = {};
-  sortedAsc.forEach((e, i) => { prevMap[e.date] = i > 0 ? sortedAsc[i-1].amount : null; });
-
-  let html = `<thead><tr>
-    <th>Дата</th><th>День</th><th>Выручка</th><th>Чеков</th>
-    <th>Ср. чек</th><th>Δ к пред.</th><th>Выручка/сотр.</th>
-  </tr></thead><tbody>`;
-
+  const prevMap = {}; sortedAsc.forEach((e, i) => { prevMap[e.date] = i > 0 ? sortedAsc[i-1].amount : null; });
+  let html = `<thead><tr><th>Дата</th><th>День</th><th>Выручка</th><th>Чеков</th><th>Ср. чек</th><th>Δ</th><th>₽/сотр.</th></tr></thead><tbody>`;
   filtered.forEach(e => {
     const d = new Date(e.date + 'T00:00:00');
     const prev = prevMap[e.date];
@@ -781,45 +520,31 @@ function renderRevenue() {
     const avgCheck = e.checks > 0 ? e.amount / e.checks : 0;
     const dayData = calculateDay(d);
     const staffNeeded = Math.max(...dayData.hourly.map(v => Math.ceil(v * SERVICE_TIME_MIN / SHIFT_MIN / EFFECT)));
-
-    html += `<tr>
-      <td>${d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'})}</td>
+    html += `<tr><td>${d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'})}</td>
       <td><span class="dab-badge">${DOW_NAMES[d.getDay()]}</span></td>
-      <td class="num">${formatRub(e.amount)}</td>
-      <td class="num">${e.checks || '—'}</td>
+      <td class="num">${formatRub(e.amount)}</td><td class="num">${e.checks || '—'}</td>
       <td class="num">${avgCheck ? formatRub(avgCheck) : '—'}</td>
-      <td class="num ${delta === null ? '' : delta >= 0 ? 'delta-up' : 'delta-down'}">
-        ${delta === null ? '—' : (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%'}</td>
-      <td class="num">${formatRub(e.amount / Math.max(1, staffNeeded))}</td>
-    </tr>`;
+      <td class="num ${delta === null ? '' : delta >= 0 ? 'delta-up' : 'delta-down'}">${delta === null ? '—' : (delta >= 0 ? '+' : '') + delta.toFixed(1) + '%'}</td>
+      <td class="num">${formatRub(e.amount / Math.max(1, staffNeeded))}</td></tr>`;
   });
-
-  html += '</tbody>';
-  table.innerHTML = html;
+  table.innerHTML = html + '</tbody>';
 }
 
-/* ===================== ЭКСПОРТ CSV ===================== */
+/* ===================== ЭКСПОРТ ===================== */
 function exportCSV() {
   const rev = loadRevenue();
   const rows = [['Дата','Выручка,₽','Чеков','Средний чек,₽','День недели']];
-
-  Object.entries(rev)
-    .sort((a,b) => a[0].localeCompare(b[0]))
-    .forEach(([date, v]) => {
-      const d = new Date(date + 'T00:00:00');
-      const avg = v.checks > 0 ? (v.amount / v.checks).toFixed(0) : '';
-      rows.push([date, v.amount, v.checks || '', avg, DOW_FULL[d.getDay()]]);
-    });
-
+  Object.entries(rev).sort((a,b) => a[0].localeCompare(b[0])).forEach(([date, v]) => {
+    const d = new Date(date + 'T00:00:00');
+    const avg = v.checks > 0 ? (v.amount / v.checks).toFixed(0) : '';
+    rows.push([date, v.amount, v.checks || '', avg, DOW_FULL[d.getDay()]]);
+  });
   const csv = '\uFEFF' + rows.map(r => r.map(c => `"${c}"`).join(';')).join('\n');
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `dab-revenue-${new Date().toISOString().split('T')[0]}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('📥 CSV скачан');
+  const a = document.createElement('a'); a.href = url;
+  a.download = `dab-revenue-${new Date().toISOString().split('T')[0]}.csv`; a.click();
+  URL.revokeObjectURL(url); showToast('📥 CSV скачан');
 }
 
 /* ===================== TOAST ===================== */
@@ -837,27 +562,57 @@ function recalculate() {
   const input = document.getElementById('dateInput');
   const date = input.value ? new Date(input.value + 'T00:00:00') : new Date();
   const data = calculateDay(date);
-
-  renderKPI(data);
-  renderFactors(data, date);
-  renderHourlyChart(data);
-  renderHeatmap(date);
-  renderStaffTable(data);
-  renderRevenue();
+  renderKPI(data); renderFactors(data, date); renderHourlyChart(data);
+  renderHeatmap(date); renderStaffTable(data); renderRevenue();
 }
-
-function selectDate(dateStr) {
-  document.getElementById('dateInput').value = dateStr;
-  recalculate();
-}
-
+function selectDate(dateStr) { document.getElementById('dateInput').value = dateStr; recalculate(); }
 function randomDay() {
-  const d = new Date();
-  d.setDate(d.getDate() + Math.floor(Math.random() * 60) - 30);
-  document.getElementById('dateInput').value = d.toISOString().split('T')[0];
-  recalculate();
+  const d = new Date(); d.setDate(d.getDate() + Math.floor(Math.random() * 60) - 30);
+  document.getElementById('dateInput').value = d.toISOString().split('T')[0]; recalculate();
 }
 
+/* ===================== PWA ===================== */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBtn').classList.add('show');
+});
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choice) => {
+      if (choice.outcome === 'accepted') showToast('📱 Приложение установлено!');
+      deferredPrompt = null;
+      document.getElementById('installBtn').classList.remove('show');
+    });
+  } else {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      alert('Установка на iPhone:\n\n1. Нажмите кнопку "Поделиться" в Safari (квадрат со стрелкой вверх)\n2. Прокрутите вниз и выберите "На экран Домой"\n3. Нажмите "Добавить"\n\nГотово — иконка DAB появится на рабочем столе!');
+    } else {
+      alert('Откройте меню браузера (⋮) → "Установить приложение" или "Добавить на главный экран"');
+    }
+  }
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log('SW зарегистрирован:', reg.scope))
+      .catch(err => console.error('SW ошибка:', err));
+  });
+}
+
+function updateOnlineStatus() {
+  const banner = document.getElementById('offlineBanner');
+  banner.classList.toggle('show', !navigator.onLine);
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+/* ===== INIT ===== */
 (function init() {
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0];
